@@ -145,9 +145,8 @@ let exportedMethods = {
         return await this.getUser(newUser._id);
     },
 
-    //NM - Corrected spelling of orientation, added email attribute. Commented hashed password and
-    //location preference checks for now. Added check for duplicate username.
-    async updateUser(user) {
+    async updateUser(user,password) {
+        
         oldUser=await this.getUser(user._id);
         const updatedUser = {
             _id:oldUser._id,
@@ -215,10 +214,11 @@ let exportedMethods = {
             updatedUser.location_pref=user.location_pref;
         }*/
 
-        /*
-        if(user.hashedpassword != null){
-            updatedUser.hashedPassword=user.hashedPassword;
-        }*/
+        result= await comparePassword(password,oldUser.hashedPassword);
+        if (!result){
+            const hash = await bcrypt.hashAsync(password, 16.5);
+            updatedUser.hashedPassword=hash;
+        }
         
         const userCollection = await usersList();
         // our first parameters is a way of describing the document to update;
