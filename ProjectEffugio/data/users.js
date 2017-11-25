@@ -46,17 +46,20 @@ let exportedMethods = {
         users=[];
         oneUser={};
 
+        //NM - Corrected spelling of orientation, added email attribute
         for(var val of listOfUsers){
             oneUser={};
             oneUser._id=val._id;
-            oneUser.user_id=val.user_id
+            oneUser.user_id=val.user_id;
             oneUser.name=val.name;
             oneUser.hashedPassword=val.hashedPassword;
             oneUser.age=val.age;
             oneUser.gender=val.gender;
             oneUser.location=val.location;
             oneUser.occupation=val.occupation;
-            oneUser.orientation=val.orinetation;
+            oneUser.orientation=val.orientation;
+            oneUser.contact_info=val.contact_info;
+            oneUser.email=val.email;
             oneUser.location_pref=val.location_pref;
             oneUser.connections=val.connections;
 
@@ -76,6 +79,7 @@ let exportedMethods = {
     },
 
     //add user to the collection
+    //NM - Corrected spelling of orientation, added email attribute
     async addUser(user,password) {
         
         const userCollection = await usersList();
@@ -90,8 +94,9 @@ let exportedMethods = {
             gender:user.gender,
             location:user.location,
             occupation:user.occupation,
-            orientation:user.orinetation,
+            orientation:user.orientation,
             contact_info:user.contact_info,
+            email:user.email,
             location_pref:user.location_pref,
             connections:user.connections
         };
@@ -110,6 +115,7 @@ let exportedMethods = {
     },
 
     //add connection to user
+    //NM - Corrected spelling of orientation, added email attribute
     async addConnection(id,connectedid) {
         if (typeof connectedid !== "string") throw "No connectedid provided";
  
@@ -124,8 +130,9 @@ let exportedMethods = {
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
-            orientation:oldUser.orinetation,
+            orientation:oldUser.orientation,
             contact_info:oldUser.contact_info,
+            email:oldUser.email,
             location_pref:oldUser.location_pref,
             hashedPassword:oldUser.hashedPassword,
             connections:oldUser.connections
@@ -138,8 +145,9 @@ let exportedMethods = {
         return await this.getUser(newUser._id);
     },
 
+    //NM - Corrected spelling of orientation, added email attribute. Commented hashed password and
+    //location preference checks for now. Added check for duplicate username.
     async updateUser(user) {
-        
         oldUser=await this.getUser(user._id);
         const updatedUser = {
             _id:oldUser._id,
@@ -149,12 +157,26 @@ let exportedMethods = {
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
-            orientation:oldUser.orinetation,
+            orientation:oldUser.orientation,
             contact_info:oldUser.contact_info,
+            email:oldUser.email,
             location_pref:oldUser.location_pref,
             hashedPassword:oldUser.hashedPassword
            
         };
+
+        if(user.user_id){
+            //console.log("Inside duplicate username check in updateUser");
+            let usernameExists = await this.getUserbyUserId(user.user_id);
+            //console.log(usernameExists);
+            if((usernameExists)&&(usernameExists._id !== user._id)){
+                throw "This username already exists. Please pick another username";
+                return;
+            }
+            else{
+                updatedUser.user_id=user.user_id;
+            }
+        }
 
         //TODO: check here or in html??
         if(user.name != null){
@@ -165,6 +187,10 @@ let exportedMethods = {
             updatedUser.age=user.age;
         }
 
+        if(user.gender != null){
+            updatedUser.gender=user.gender;
+        }
+
         if(user.location != null){
             updatedUser.location=user.location;
         }
@@ -173,21 +199,26 @@ let exportedMethods = {
             updatedUser.occupation=user.occupation;
         }
 
-        if(user.orinetation != null){
-            updatedUser.orinetation=user.orinetation;
+        if(user.orientation != null){
+            updatedUser.orientation=user.orientation;
         }
 
         if(user.contact_info != null){
             updatedUser.contact_info=user.contact_info;
         }
 
+        if(user.email != null){
+            updatedUser.email=user.email;
+        }
+        /*    
         if(user.location_pref != null){
             updatedUser.location_pref=user.location_pref;
-        }
+        }*/
 
+        /*
         if(user.hashedpassword != null){
             updatedUser.hashedPassword=user.hashedPassword;
-        }
+        }*/
         
         const userCollection = await usersList();
         // our first parameters is a way of describing the document to update;
