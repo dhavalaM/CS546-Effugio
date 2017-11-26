@@ -40,7 +40,10 @@ let exportedMethods={
 		//const listOfTravels = await travelConnection.fnid({name: name}).limit(1).toArray();
 		const listOfTravels = [{_id: 1234,name: "New York",description: "New york state"},
 		{_id: 4567,name: "New Jersey",description: "New Jersey state"},
-		{_id: 7687,name: "Connecticut",description: "CT state"}];
+		{_id: 7687,name: "Connecticut",description: "CT state"},
+		{_id: 4352,name: "Baltimore",description: "Baltimore state"},
+		{_id: 7676,name: "Chicago",description: "Chicago state"}
+	];
 		if (listOfTravels.length ===0) return null;
 		for (var i = 0; i < listOfTravels.length; i++) { 
 			if(listOfTravels[i].name === name){
