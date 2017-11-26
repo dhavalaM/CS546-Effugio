@@ -1,5 +1,9 @@
 connections = require("./connection");
-travels = require("./travel");
+//travels = require("./travel");
+budgets = require("./budget");
+
+console.log(budgets.getBudgetById("1"));
+console.log(budgets.getIdByBudget("100-200"));
 
 function makeConDoc(req_id, con_id, stat, loc_id, date){
 
@@ -40,7 +44,7 @@ async function test_travel(){
 
 }
 
-test_travel();
+//test_travel();
 
 async function create_connection(){
     /*

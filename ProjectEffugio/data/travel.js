@@ -8,7 +8,7 @@ var bcrypt = Promise.promisifyAll(require("bcrypt"));
 
 
 let exportedMethods={
-    
+
 
     async getAllTravel(){
     	const travelConnection = await travelList();
@@ -41,7 +41,6 @@ let exportedMethods={
 	    if (listOfTravels.length ===0) return null;
 	    return listOfTravels[0];
     },
-
     async addTravelData(travelData){
 	    const travelConnection = await travelList();
 	    const newTravel = {
@@ -55,8 +54,18 @@ let exportedMethods={
 	    console.log("inserted: "+newId);
 	    return await this.getTravelById(newId);
 	
+    },
+    
+    async removeTravelById(_id){
+        if(!_id) throw 'give id to remove travel';
+        const travelConnection = await travelList();
+        const deleteInfo = await travelConnection.removeOne({_id: _id});
+        if (deletionInfo.deletedCount ===0){
+	        throw `Could not delete connection with id of ${_id}`;
+        }
     }
 
+    
 
 };
 

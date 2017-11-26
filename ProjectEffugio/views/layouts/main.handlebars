@@ -1,47 +1,75 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Effugio</title>
-	<link rel="stylesheet" href="/css/bootstrap.css" />
-	<link rel="stylesheet" href="/css/style.css" />
+  <title>Effugio</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <!-- Bootstrap Date-Picker Plugin -->
+  <!-- Include Date Range Picker -->
+  <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
 </head>
+
 <body>
-	<div class="container">
-      <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-            {{#if user}}
-              <li role="presentation"><a href="/">Dashboard</a></li>
-              <li role="presentation"><a href="/users/profile">My Profile</a></li>
-              <li role="presentation"><a href="/users/logout">Logout</a></li>
-            {{else}}
-              <li role="presentation"><a href="/users/login">Login</a></li>
-              <li role="presentation"><a href="/users/register">Register</a></li>
-            {{/if}}
-          </ul>
-        </nav>
-        <h3 class="text-muted">Effugio</h3>
+  <div class="container">
+    <div class="header clearfix">
+      <nav>
+        <ul class="nav nav-pills pull-right">
+          {{#if user}}
+          <li role="presentation">
+            <a href="/">Dashboard</a>
+          </li>
+          <li role="presentation">
+            <a href="/users/profile">My Profile</a>
+          </li>
+          <li role="presentation">
+            <a href="/users/logout">Logout</a>
+          </li>
+          {{else}}
+          <li role="presentation">
+            <a href="/users/login">Login</a>
+          </li>
+          <li role="presentation">
+            <a href="/users/register">Register</a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+      <h3 class="text-muted">Effugio</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        {{#if success_msg}}
+        <div class="alert alert-success">{{success_msg}}</div>
+        {{/if}} {{#if error_msg}}
+        <div class="alert alert-danger">{{error_msg}}</div>
+        {{/if}} {{#if error}}
+        <div class="alert alert-danger">{{error}}</div>
+        {{/if}} {{{body}}}
       </div>
+    </div>
 
-<div class="row">
-  <div class="col-lg-12">
-    {{#if success_msg}}
-      <div class="alert alert-success">{{success_msg}}</div>
-    {{/if}} 
-    {{#if error_msg}}
-      <div class="alert alert-danger">{{error_msg}}</div>
-    {{/if}} 
-    {{#if error}}
-      <div class="alert alert-danger">{{error}}</div>
-    {{/if}} 
-    {{{body}}}
+    <footer class="footer">
+      <p>&copy; 2017 Effugio, Inc.</p>
+    </footer>
+
   </div>
-</div>
-
-      <footer class="footer">
-        <p>&copy; 2017 Effugio, Inc.</p>
-      </footer>
-
-    </div> <!-- /container -->
+  <!-- /container -->
+  <script type="text/javascript">
+    $(function () {
+      $('input[name="dob"]').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true
+      },
+        function (start, end, label) {
+          var years = moment().diff(start, 'years');
+          alert("You are " + years + " years old.");
+        });
+    });
+  </script>
 </body>
+
 </html>
