@@ -19,8 +19,6 @@ let exportedMethods = {
         if (listOfUsers.length === 0) return null;
             
         return listOfUsers[0];
-                
-       
     },
 
     //Get the user based on uuid _id
@@ -52,7 +50,7 @@ let exportedMethods = {
             oneUser.user_id=val.user_id
             oneUser.name=val.name;
             oneUser.hashedPassword=val.hashedPassword;
-            oneUser.age=val.age;
+            oneUser.dob=val.dob;
             oneUser.gender=val.gender;
             oneUser.location=val.location;
             oneUser.occupation=val.occupation;
@@ -86,12 +84,14 @@ let exportedMethods = {
             user_id:user.user_id,
             hashedPassword:"",
             name:user.name,
-            age:user.age,
+            dob:user.dob,
             gender:user.gender,
             location:user.location,
             occupation:user.occupation,
-            orientation:user.orinetation,
+            orientation:user.orientation,
             contact_info:user.contact_info,
+            email:user.email,
+            budget:user.budget,
             location_pref:user.location_pref,
             connections:user.connections
         };
@@ -102,10 +102,10 @@ let exportedMethods = {
         newUser.hashedPassword=hash;
         
         
-        console.log(newUser);
+        //console.log(newUser);
         const newInsertInformation = await userCollection.insertOne(newUser);
         const newId = newInsertInformation.insertedId;
-        console.log("inserted: "+newId);
+        //console.log("inserted: "+newId);
         return await this.getUser(newId);
     },
 
@@ -120,12 +120,14 @@ let exportedMethods = {
             _id:oldUser._id,
             user_id:oldUser.user_id,
             name:oldUser.name,
-            age:oldUser.age,
+            dob:oldUser.dob,
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
             orientation:oldUser.orinetation,
             contact_info:oldUser.contact_info,
+            email:oldUser.email,
+            budget:oldUser.budget,
             location_pref:oldUser.location_pref,
             hashedPassword:oldUser.hashedPassword,
             connections:oldUser.connections
@@ -145,12 +147,14 @@ let exportedMethods = {
             _id:oldUser._id,
             user_id:oldUser.user_id,
             name:oldUser.name,
-            age:oldUser.age,
+            dob:oldUser.dob,
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
             orientation:oldUser.orinetation,
             contact_info:oldUser.contact_info,
+            email:oldUser.email,
+            budget:oldUser.budget,
             location_pref:oldUser.location_pref,
             hashedPassword:oldUser.hashedPassword
            
@@ -161,8 +165,8 @@ let exportedMethods = {
             updatedUser.name=user.name;
         }
 
-        if(user.age != null){
-            updatedUser.age=user.age;
+        if(user.dob != null){
+            updatedUser.dob=user.dob;
         }
 
         if(user.location != null){
@@ -180,7 +184,12 @@ let exportedMethods = {
         if(user.contact_info != null){
             updatedUser.contact_info=user.contact_info;
         }
-
+        if(user.email != null){
+            updatedUser.email=user.email;
+        }
+        if(user.budget != null){
+            updatedUser.budget=user.budget;
+        }
         if(user.location_pref != null){
             updatedUser.location_pref=user.location_pref;
         }
@@ -188,7 +197,7 @@ let exportedMethods = {
         if(user.hashedpassword != null){
             updatedUser.hashedPassword=user.hashedPassword;
         }
-        
+
         const userCollection = await usersList();
         // our first parameters is a way of describing the document to update;
         // our second will be a replacement version of the document;
@@ -216,7 +225,6 @@ let exportedMethods = {
                 {
                     connections.push(val);
                 }
-                 
         };
         
         changeUser.connections=connections;

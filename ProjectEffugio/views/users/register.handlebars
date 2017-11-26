@@ -7,32 +7,32 @@
 <form method="post" action="/users/register">
    <div class="form-group">
     <label>Full Name</label>
-    <input type="text" class="form-control" placeholder="Name" name="name" value={{ name }}>
+    <input type="text" class="form-control" placeholder="Name" name="name" value={{ user.name }}>
   </div>
   <div class="form-group">
     <label>Gender</label>
-    <select class="custom-select form-control" name="gender" value={{ gender }}>
-      <option selected>Select Gender</option>
+    <select class="custom-select form-control" name="gender" value={{ user.gender }}>
+      <option selected>{{ user.gender}}</option>
       <option value="M">Male</option>
       <option value="F">Female</option>
     </select>
   </div>
-  <div class="form-group">
-    <label>Age</label>
-    <input type="text" class="form-control" placeholder="Age" name="age" value={{ age }}>
-  </div>
+  <div class="form-group"> <!-- Date input -->
+    <label>Date of Birth</label>
+        <input class="form-control" id="dob" name="dob" placeholder="MM/DD/YYY" type="text"/>
+  </div> 
   <div class="form-group">
     <label>Location</label>
-    <input type="text" class="form-control" placeholder="Location" name="location" value={{ location }}>
+    <input type="text" class="form-control" placeholder="Location" name="location" value={{ user.location }}>
   </div>
   <div class="form-group">
     <label>Occupation</label>
-    <input type="text" class="form-control" placeholder="Occupation" name="occupation" value={{ occupation }}>
+    <input type="text" class="form-control" placeholder="Occupation" name="occupation" value={{ user.occupation }}>
   </div>
   <div class="form-group">
     <label>Orientation</label>
-    <select class="custom-select form-control" name="orientation" value={{ orientation }}>
-      <option selected>{{ orientation }}</option>
+    <select class="custom-select form-control" name="orientation" value={{ user.orientation }}>
+      <option selected>{{ user.orientation }}</option>
       <option value="s">Straight</option>
       <option value="g">Gay</option>
       <option value="l">Lesbian</option>
@@ -40,42 +40,48 @@
   </div>
   <div class="form-group">
     <label>Contact Information</label>
-    <input type="text" class="form-control" placeholder="Contact Information" name="contactInformation" value={{ contactInformation }}>
+    <input type="text" class="form-control" placeholder="Contact Information" name="contactInformation" value={{ user.contactInformation }}>
   </div>
-   <div class="form-group">
-    <label>Location Preference 1</label>
-    <input type="text" class="form-control" placeholder="Location Preference 1" name="locationPreference1">
-  </div>
+  
   <div class="form-group">
-    <label for="locationpref">Select Location</label>
-    <select multiple class="form-control" id="locationpref">
-      <option value="newyork">New York</option>
-      <option value="newjersey">New Jersey</option>
-      <option value="connecticut">Connecticut</option>
-      <option value="baltimore">Baltimore</option>
-      <option value="chicago">Chicago</option>
+    <label for="locationpref">Location Preference</label>
+    <select multiple class="form-control" id="locationpref" name="locationpref">
+      <option value="New York">New York</option>
+      <option value="New Jersey">New Jersey</option>
+      <option value="Connecticut">Connecticut</option>
+      <option value="Baltimore">Baltimore</option>
+      <option value="Chicago">Chicago</option>
     </select>
   </div>
- 
-   <div class="form-group">
+{{!--    <div class="form-group">
     <label>Budget Preference</label>
     <input type="text" class="form-control" placeholder="Budget Preference" name="budgetPreference" value={{ budgetPreference }} >
+  </div> --}}
+  <div class="form-group">
+    <label>Budget Preference</label>
+    <select class="custom-select form-control" name="budgetPreference" value={{ user.budgetPreference }}>
+      <option selected>{{ user.budgetPreference}}</option>
+      <option value="1">100-500</option>
+      <option value="2">500-1000</option>
+      <option value="3">1000-1500</option>
+    </select>
   </div>
   <div class="form-group">
     <label>Username</label>
-    <input type="text" class="form-control" placeholder="Username" name="user_id" value={{ user_id }}>
+    <input type="text" class="form-control" placeholder="Username" name="user_id" value={{ user.user_id }}>
   </div>
    <div class="form-group">
     <label>Email</label>
-    <input type="email" class="form-control" placeholder="Email" name="email" value={{ email }}>
+    <input type="email" class="form-control" placeholder="Email" name="email" value={{ user.email }}>
   </div>
   <div class="form-group">
     <label>Password</label>
-    <input type="password" class="form-control" placeholder="Password" name="password" value={{ password }}>
+    <input type="password" class="form-control" placeholder="Password" name="password" value={{ user.password }}>
   </div>
   <div class="form-group">
     <label>Confirm Password</label>
-    <input type="password" class="form-control" placeholder="Password" name="password2" value={{ password2 }}>
+    <input type="password" class="form-control" placeholder="Password" name="password2" value={{ user.password2 }}>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
+ 
 </form>

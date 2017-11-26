@@ -8,10 +8,10 @@ var bcrypt = Promise.promisifyAll(require("bcrypt"));
 
 
 let exportedMethods={
-    
+
 
     async getAllTravel(){
-    	const travelConnection = awaittravelList();
+    	const travelConnection = await travelList();
 	    const listOfTravels = await travelConnection.find().toArray();
 	    travels = [];
 
@@ -37,11 +37,20 @@ let exportedMethods={
     async getIDByLocation(name){
 	    if(!name) throw 'provide a name to give the location details';
 	    const travelConnection = await travelList();
-	    const listOfTravels = await travelConnection.fnid({name: name}).limit(1).toArray();
-	    if (listOfTravels.length ===0) return null;
-	    return listOfTravels[0];
+		//const listOfTravels = await travelConnection.fnid({name: name}).limit(1).toArray();
+		const listOfTravels = [{_id: 1234,name: "New York",description: "New york state"},
+		{_id: 4567,name: "New Jersey",description: "New Jersey state"},
+		{_id: 7687,name: "Connecticut",description: "CT state"}];
+		if (listOfTravels.length ===0) return null;
+		for (var i = 0; i < listOfTravels.length; i++) { 
+			if(listOfTravels[i].name === name){
+				//console.log(listOfTravels[i]);
+				return listOfTravels[i];
+			}
+		}
+		//return listOfTravels[0];
+		return null;
     },
-
     async addTravelData(travelData){
 	    const travelConnection = await travelList();
 	    const newTravel = {
@@ -55,8 +64,7 @@ let exportedMethods={
 	    console.log("inserted: "+newId);
 	    return await this.getTravelById(newId);
 	
-    }
-
+	},
 
 };
 
