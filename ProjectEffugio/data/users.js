@@ -57,6 +57,7 @@ let exportedMethods = {
             oneUser.orientation=val.orinetation;
             oneUser.location_pref=val.location_pref;
             oneUser.connections=val.connections;
+            oneUser.budget=val.budget
 
             users.push(oneUser);
         }

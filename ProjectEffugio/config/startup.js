@@ -25,6 +25,7 @@ var makeDoc = function(user_id, name,hashedPassword,dob,gender,location,occupati
         orientation:orientation,
         contact_info:contact_info,
         location_pref:[],
+        budget:"",
         connections:[]
         
     }
@@ -67,23 +68,23 @@ function runSetup() {
            // var userJack=makeDoc("jack_d","Jack Dawson","",25,"M","Hoboken","Teacher","s","9176567143");
             var userJack=makeDoc("jack_d","Jack Dawson","","01/01/1990","M","Hoboken","Teacher","s","9176567143");
             userJack.hashedPassword="$2a$16$mEbkQxGZt3a/qidjcCb6O..ah9yyDlGRj2lWpSK/ebQJJjSp1ISmS";
-            addLocationPreference(userJack,"1234",1);
-            addLocationPreference(userJack,"4321",2);
-            addLocationPreference(userJack,"5678",1);
-
+            locations=["1234","4321"];
+            userJack.location_pref=locations;
+            userJack.budget="100-200";
+            
             //var userRose=makeDoc("rose_d","Rose Dewitt","",25,"F","Hoboken","Dancer","s","9136567143");
             var userRose=makeDoc("rose_d","Rose Dewitt","","11/03/1995","F","Hoboken","Dancer","s","9136567143");
             
-            addLocationPreference(userRose,"1234",1);
-            addLocationPreference(userRose,"4321",2);
+           
             
             // we can use insertMany to insert an array of documents!
             return userCollection.insertOne(userJack).then(function(jackUser) {
 
                 //var userRose=makeDoc("rose_d","Rose Dewitt","",25,"F","Hoboken","Dancer","s","9136567143");
                 var userRose=makeDoc("rose_d","Rose Dewitt","","11/03/1995","F","Hoboken","Dancer","s","9136567143");
-                addLocationPreference(userRose,"1234",1);
-                addLocationPreference(userRose,"4321",2);
+                locations=["5678","8765"];
+                userRose.location_pref=locations;
+                userRose.budget="100-200";
                 
                 addConnection(userRose,jackUser.insertedId);
                 
