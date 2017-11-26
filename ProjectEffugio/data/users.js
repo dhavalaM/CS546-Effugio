@@ -185,7 +185,7 @@ let exportedMethods = {
             updatedUser.location_pref=user.location_pref;
         }
 
-        result= await comparePassword(password,oldUser.hashedPassword)
+        result= await comparePassword(password,oldUser.hashedPassword);
         if (!result){
             const hash = await bcrypt.hashAsync(password, 16.5);
             updatedUser.hashedPassword=hash;
