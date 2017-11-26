@@ -21,15 +21,15 @@ let exportedMethods={
 	    if(!requestor_id) throw 'provide an requestor id'
         const connectionCollection = await connectionList();
 	    const listOfConnections = await connectionCollection.find({requestor_id: requestor_id}).toArray();
-	    if (listOfconnections.length ===0) return null;
+	    if (listOfConnections.length ===0) return null;
 	    return listOfConnections;
 	
     },
-    async getConnectionbyConnectedId(connected_id){
-	    if(!connector_id) throw 'provide an connector id'
+    async getConnectionByConnectedId(connected_id){
+	    if(!connected_id) throw 'provide an connector id'
         const connectionCollection = await connectionList();
-	    const listOfConnections = await connectionCollection.find({connector_id: connector_id}).toArray();
-	    if (listOfconnections.length ===0) return null;
+	    const listOfConnections = await connectionCollection.find({connected_id: connected_id}).toArray();
+	    if (listOfConnections.length ===0) return null;
 	    return listOfConnections;
 
     },
@@ -62,22 +62,23 @@ let exportedMethods={
 	        connected_id: connectionData.connected_id,
 	        status: connectionData.status,
 	        location_id: connectionData.location_id,
-	        date_initiated: connectondata.date_initiated
+	        date_initiated: connectionData.date_initiated
 	    };
 
 	    console.log(newConnection);
-	    const newInsertInformation = await connectionCollection.insertOne(newConnection);
+	    const newInsertedInformation = await connectionCollection.insertOne(newConnection);
 	    const newId = newInsertedInformation.insertedId;
 	    console.log("inserted: "+newId);
-	    return await this.getConnetionById(newId);
+	    return await this.getConnectionById(newId);
 
     },
+    
     async removeConnection(_id){
 	    if(!_id) throw 'provide an id to delete';
         const connectionCollection = await connectionList();
 	    const deletionInfo = await connectionCollection.removeOne({ _id: _id});
 	    if (deletionInfo.deletedCount ===0){
-	        throw `Could not delete user with id of ${_id}`;
+	        throw `Could not delete connection with id of ${_id}`;
 	    }
     }
 

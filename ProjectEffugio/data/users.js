@@ -140,7 +140,7 @@ let exportedMethods = {
         return await this.getUser(newUser._id);
     },
 
-    async updateUser(user) {
+    async updateUser(user,password) {
         
         oldUser=await this.getUser(user._id);
         const updatedUser = {
@@ -194,8 +194,10 @@ let exportedMethods = {
             updatedUser.location_pref=user.location_pref;
         }
 
-        if(user.hashedpassword != null){
-            updatedUser.hashedPassword=user.hashedPassword;
+        result= await comparePassword(password,oldUser.hashedPassword);
+        if (!result){
+            const hash = await bcrypt.hashAsync(password, 16.5);
+            updatedUser.hashedPassword=hash;
         }
 
         const userCollection = await usersList();
