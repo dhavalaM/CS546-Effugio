@@ -11,7 +11,7 @@ let exportedMethods={
     
 
     async getAllTravel(){
-    	const travelConnection = awaittravelList();
+    	const travelConnection = await travelList();
 	    const listOfTravels = await travelConnection.find().toArray();
 	    travels = [];
 
@@ -34,10 +34,10 @@ let exportedMethods={
 	    if (listOfTravels.length ===0) return null;
 	    return listOfTravels[0];
     },
-    async getIDByLocation(name){
+    async getIdByLocation(name){
 	    if(!name) throw 'provide a name to give the location details';
 	    const travelConnection = await travelList();
-	    const listOfTravels = await travelConnection.fnid({name: name}).limit(1).toArray();
+	    const listOfTravels = await travelConnection.find({name: name}).limit(1).toArray();
 	    if (listOfTravels.length ===0) return null;
 	    return listOfTravels[0];
     },
@@ -50,7 +50,7 @@ let exportedMethods={
 	        description: travelData.description
 	    };
 	    console.log(newTravel);
-	    const newInsertInformation = await travelConnection.insertOne(newTravel);
+	    const newInsertedInformation = await travelConnection.insertOne(newTravel);
 	    const newId = newInsertedInformation.insertedId;
 	    console.log("inserted: "+newId);
 	    return await this.getTravelById(newId);

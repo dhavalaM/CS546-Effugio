@@ -1,5 +1,5 @@
 connections = require("./connection");
-
+travels = require("./travel");
 
 function makeConDoc(req_id, con_id, stat, loc_id, date){
 
@@ -13,7 +13,34 @@ function makeConDoc(req_id, con_id, stat, loc_id, date){
     return conData; 
 }
 
+function makeTravelDoc(name,des){
+    travelDoc={
+        name:name,
+        description:des
 
+
+
+    };
+    return travelDoc;
+}
+
+async function test_travel(){
+    /*
+    travelData =  makeTravelDoc("Vegas", "Elope");
+    newTravel = await travels.addTravelData(travelData);
+    console.log(newTravel);
+    
+    alltravel = await travels.getAllTravel()
+    console.log(alltravel);
+    */
+    locId = await travels.getIdByLocation("Vegas");
+    console.log(locId);
+
+
+
+}
+
+test_travel();
 
 async function create_connection(){
     /*
@@ -32,18 +59,19 @@ async function create_connection(){
     console.log(conFromConid);
     */
 
+    //listCons= await connections.getAllConnections();
+    //console.log(listCons);
+    console.log(connections);
+
+    //await connections.removeConnection('8d0675f7-ab19-4add-a38d-a0f6728fcfbd');
+
     listCons= await connections.getAllConnections();
     console.log(listCons);
 
-    await connections.removeConnection('8d0675f7-ab19-4add-a38d-a0f6728fcfbd');
-
-    listCons= await connections.getAllConnections();
-    console.log(listCons);
-
-    l
+    
     
     
 
 }
-
-create_connection();
+//for testing the connections
+//create_connection();
