@@ -13,7 +13,7 @@ let exportedMethods={
     async getAllTravel(){
     	const travelConnection = await travelList();
 	    const listOfTravels = await travelConnection.find().toArray();
-	    travels = [];
+	    alltravels = [];
 
 	    for(var val of listOfTravels){
 	        oneTravel = {};
@@ -21,10 +21,10 @@ let exportedMethods={
 	        oneTravel.name = val.name;
 	        oneTravel.description = val.description;
 
-	        travels.push(oneTravel);
+	        alltravels.push(oneTravel);
 	    }
 
-	    return travels;
+	    return alltravels;
     },
     async getTravelById(_id){
 	
@@ -51,7 +51,7 @@ let exportedMethods={
 	    console.log(newTravel);
 	    const newInsertedInformation = await travelConnection.insertOne(newTravel);
 	    const newId = newInsertedInformation.insertedId;
-	    console.log("inserted: "+newId);
+	    //console.log("inserted: "+newId);
 	    return await this.getTravelById(newId);
 	
     },
@@ -60,7 +60,7 @@ let exportedMethods={
         if(!_id) throw 'give id to remove travel';
         const travelConnection = await travelList();
         const deleteInfo = await travelConnection.removeOne({_id: _id});
-        if (deletionInfo.deletedCount ===0){
+        if (deleteInfo.deletedCount ===0){
 	        throw `Could not delete connection with id of ${_id}`;
         }
     }

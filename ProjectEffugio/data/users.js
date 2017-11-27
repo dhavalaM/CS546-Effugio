@@ -41,7 +41,7 @@ let exportedMethods = {
         const listOfUsers = await userCollection.find().toArray();
         
 
-        users=[];
+        allusers=[];
         oneUser={};
 
         for(var val of listOfUsers){
@@ -59,10 +59,10 @@ let exportedMethods = {
             oneUser.connections=val.connections;
             oneUser.budget=val.budget
 
-            users.push(oneUser);
+            allusers.push(oneUser);
         }
 
-        return users;
+        return allusers;
     },
 
     //Get connections of a user
