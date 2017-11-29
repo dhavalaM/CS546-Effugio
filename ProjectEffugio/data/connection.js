@@ -36,7 +36,7 @@ let exportedMethods={
     async getAllConnections(){
         const connectionCollection = await connectionList();
 	    const listOfConnections = await connectionCollection.find().toArray();
-	    connections = [];
+	    allConnections = [];
 
 
 	    for(var val of listOfConnections){
@@ -48,10 +48,10 @@ let exportedMethods={
 	        oneConnection.location_id = val.location_id;
 	        oneConnection.date_initiated = val.date_initiated;
 
-	        connections.push(oneConnection);
+	        allConnections.push(oneConnection);
 	    }
 
-	    return connections;
+	    return allConnections;
     },
     async addConnection(connectionData){
         const connectionCollection = await connectionList();
@@ -72,7 +72,7 @@ let exportedMethods={
 	    return await this.getConnectionById(newId);
 
     },
-    
+
     async removeConnection(_id){
 	    if(!_id) throw 'provide an id to delete';
         const connectionCollection = await connectionList();

@@ -8,12 +8,12 @@ var bcrypt = Promise.promisifyAll(require("bcrypt"));
 
 
 let exportedMethods={
-    
+
 
     async getAllTravel(){
-    	const travelConnection = awaittravelList();
+    	const travelConnection = await travelList();
 	    const listOfTravels = await travelConnection.find().toArray();
-	    travels = [];
+	    alltravels = [];
 
 	    for(var val of listOfTravels){
 	        oneTravel = {};
@@ -21,10 +21,10 @@ let exportedMethods={
 	        oneTravel.name = val.name;
 	        oneTravel.description = val.description;
 
-	        travels.push(oneTravel);
+	        alltravels.push(oneTravel);
 	    }
 
-	    return travels;
+	    return alltravels;
     },
     async getTravelById(_id){
 	
@@ -34,14 +34,13 @@ let exportedMethods={
 	    if (listOfTravels.length ===0) return null;
 	    return listOfTravels[0];
     },
-    async getIDByLocation(name){
+    async getIdByLocation(name){
 	    if(!name) throw 'provide a name to give the location details';
 	    const travelConnection = await travelList();
-	    const listOfTravels = await travelConnection.fnid({name: name}).limit(1).toArray();
+	    const listOfTravels = await travelConnection.find({name: name}).limit(1).toArray();
 	    if (listOfTravels.length ===0) return null;
 	    return listOfTravels[0];
     },
-
     async addTravelData(travelData){
 	    const travelConnection = await travelList();
 	    const newTravel = {
@@ -50,13 +49,23 @@ let exportedMethods={
 	        description: travelData.description
 	    };
 	    console.log(newTravel);
-	    const newInsertInformation = await travelConnection.insertOne(newTravel);
+	    const newInsertedInformation = await travelConnection.insertOne(newTravel);
 	    const newId = newInsertedInformation.insertedId;
-	    console.log("inserted: "+newId);
+	    //console.log("inserted: "+newId);
 	    return await this.getTravelById(newId);
 	
+    },
+    
+    async removeTravelById(_id){
+        if(!_id) throw 'give id to remove travel';
+        const travelConnection = await travelList();
+        const deleteInfo = await travelConnection.removeOne({_id: _id});
+        if (deleteInfo.deletedCount ===0){
+	        throw `Could not delete connection with id of ${_id}`;
+        }
     }
 
+    
 
 };
 
