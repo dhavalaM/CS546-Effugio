@@ -126,6 +126,7 @@ function(req, res){
         // req.body.addUser(user);
         
         res.render('users/dashboard', { users: suggestedUsers,
+          user:req.user,
           helpers: {
             toage: function (dob) { return getAge(dob); }
         }},
