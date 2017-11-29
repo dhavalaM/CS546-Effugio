@@ -96,7 +96,7 @@ function makeConDoc(req_id, con_id, stat, loc_id, date){
         return conData; 
     }
 
-async function connectionStartup(){
+    module.exports =    connectionStartup = async function (){
 
     allConnections = await connections.getAllConnections();
     for(var key in allConnections){
@@ -110,12 +110,11 @@ async function connectionStartup(){
     newConnection = await connections.addConnection(connectionData);
     jackUser = await users.addConnection(newUsers[0]._id, newConnection._id);
     roseUser = await users.addConnection(newUsers[1]._id, newConnection._id);
-    console.log(jackUser);
-    console.log(roseUser);
-    //return [jackUser, roseUser];
+    //console.log(jackUser);
+    //console.log(roseUser);
+    return [jackUser, roseUser];
 
 }
 
 //connectionStartup();
 
-module.exports = connectionStartup;

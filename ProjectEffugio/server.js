@@ -22,6 +22,13 @@ app.use("/public", static);
 
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
+
+initData =  require('./data/startup2.js');
+console.log(initData);
+alldata =initData();
+
+console.log("The following data is added to the DB");
+console.log(alldata);
   
 const handlebarsInstance = exphbs.create({
     defaultLayout: 'main',
