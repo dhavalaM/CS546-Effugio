@@ -239,7 +239,7 @@ router.post('/register', function(req, res){
     if(typeof(req.body.locationpref) === "object" ){
       for (i = 0; i < req.body.locationpref.length; i++) { 
         var myloc=req.body.locationpref[i];
-        travelData.getIDByLocation(myloc).then(function(loc) {
+        travelData.getIdByLocation(myloc).then(function(loc) {
           _location_pref.push(loc._id);
       }, function(errorMessage) {
           response.status(500).json({ error: errorMessage });
@@ -247,7 +247,7 @@ router.post('/register', function(req, res){
       }
     }else{
       var myloc=req.body.locationpref;
-      travelData.getIDByLocation(myloc).then(function(loc) {
+      travelData.getIdByLocation(myloc).then(function(loc) {
         //console.log("loc"+loc._id);
         _location_pref.push(loc._id);
     }, function(errorMessage) {

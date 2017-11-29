@@ -251,6 +251,7 @@ let exportedMethods = {
                         {location_pref:{ $in: user.location_pref }},
                         {_id: {$ne:user._id}},
                         {gender: {$ne:user.gender}},
+                        {orientation: user.orientation},
         
                     ]    
                      }).toArray();
