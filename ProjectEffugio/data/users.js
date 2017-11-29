@@ -231,19 +231,73 @@ let exportedMethods = {
         };
         
         changeUser.connections=connections;
-        const recipeCollection = await usersList();
-        output= await recipeCollection.updateOne({ _id: changeUser._id }, changeUser);
+        const userCollection = await usersList();
+        output= await userCollection.updateOne({ _id: changeUser._id }, changeUser);
         if (output.updatedCount === 0) {
           throw `Could not delete comment with id of ${id}`;
         }
         return await this.getUser(changeUser._id);
       },
 
+      async getSuggestedUsers(user) {
+        
+         const userCollection = await usersList();
+
+            var findOrientation="";
+            if(user.orientation== 's')
+                {
+                    item= await userCollection.find({
+                        $and: [
+                        {location_pref:{ $in: user.location_pref }},
+                        {_id: {$ne:user._id}},
+                        {gender: {$ne:user.gender}},
+        
+                    ]    
+                     }).toArray();
+                     console.log(item)
+                }
+                else{
+                    item= await userCollection.find({
+                        $and: [
+                        {location_pref:{ $in: user.location_pref }},
+                        {_id: {$ne:user._id}},
+                        {gender: user.gender},
+                        {orientation: user.orientation},
+        
+                    ]    
+                     }).toArray();
+                     console.log(item)
+                }
+            
+             return item;
+          
+      },
+
       //compare the passwords
       async comparePassword(password,hash){
             result= await bcrypt.compareAsync(password, hash);
             return result;
-      }
+      },
+
+      async makeDoc (_id,user_id, name,hashedPassword,dob,gender,location,occupation,orientation,
+        contact_info) {
+        return {
+            _id: uuidv1(),
+            user_id:user_id,
+            name:name,
+            hashedPassword:"",
+            dob:dob,
+            gender:gender,
+            location:location,
+            occupation:occupation,
+            orientation:orientation,
+            contact_info:contact_info,
+            location_pref:[],
+            budget:"",
+            connections:[]
+            
+        }
+    }
     
 }
 

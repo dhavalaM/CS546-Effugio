@@ -120,7 +120,40 @@ function(req, res){
 router.get('/dashboard',
 require('connect-ensure-login').ensureLoggedIn("/"),
 function(req, res){
-  res.render('users/dashboard', { user: req.user});
+  userData.getSuggestedUsers(req.user).then(suggestedUsers=>{
+    if(suggestedUsers!= null){
+      // for (user in users){
+        // req.body.addUser(user);
+        
+        res.render('users/dashboard', { users: suggestedUsers,
+          helpers: {
+            toage: function (dob) { return getAge(dob); }
+        }},
+      );
+          // }
+          // res.render('users/dashboard', { user: users});
+    }
+  });
+  
+  
+  //res.render('users/dashboard', { user: null});
+});
+
+
+function getAge(dateString) {
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
+}
+
+router.post('/dashboard',
+function(req,res){
+
 });
 
 router.post('/login',

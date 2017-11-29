@@ -82,7 +82,7 @@ function runSetup() {
 
                 //var userRose=makeDoc("rose_d","Rose Dewitt","",25,"F","Hoboken","Dancer","s","9136567143");
                 var userRose=makeDoc("rose_d","Rose Dewitt","","11/03/1995","F","Hoboken","Dancer","s","9136567143");
-                locations=["5678","8765"];
+                locations=["1234","8765"];
                 userRose.location_pref=locations;
                 userRose.budget="100-200";
                 
