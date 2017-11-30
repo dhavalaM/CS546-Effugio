@@ -119,25 +119,19 @@ function(req, res){
 
 router.get('/dashboard',
 require('connect-ensure-login').ensureLoggedIn("/"),
-function(req, res){
-  userData.getSuggestedUsers(req.user).then(suggestedUsers=>{
-    if(suggestedUsers!= null){
-      // for (user in users){
-        // req.body.addUser(user);
-        
-        res.render('users/dashboard', { users: suggestedUsers,
-          user:req.user,
-          helpers: {
-            toage: function (dob) { return getAge(dob); }
-        }},
-      );
-          // }
-          // res.render('users/dashboard', { user: users});
-    }
-  });
-  
-  
-  //res.render('users/dashboard', { user: null});
+async function(req, res){
+  suggestedUsers= await userData.getSuggestedUsers(req.user);
+  if(suggestedUsers!= null){
+    console.log("suggested users:: ");
+    console.log(suggestedUsers);
+      
+      res.render('users/dashboard', { users: suggestedUsers,
+        user:req.user,
+        helpers: {
+          toage: function (dob) { return getAge(dob); }
+      }},
+    );
+  }
 });
 
 

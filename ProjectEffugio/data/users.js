@@ -5,6 +5,7 @@ const mongoCollections = require("../config/mongoCollections");
 const usersList=mongoCollections.users;
 var ObjectID=require('mongodb').ObjectID;
 var bcrypt = Promise.promisifyAll(require("bcrypt"));
+const connections = require("./connection");
 
 
 
@@ -242,32 +243,60 @@ let exportedMethods = {
       async getSuggestedUsers(user) {
         
          const userCollection = await usersList();
+         
+         console.log("****************************************************");
+         allusers= await this.getAllUsers();
+         console.log("all users");
+         console.log(allusers);
+         console.log("****************************************************");
+
+         connectionsOfUser= await connections.getConnectionByConnectedId(user._id);
+         connectionsOfUser2=await connections.getConnectionByRequestorId(user._id);
+         connectionsIds=[];
+         if(connectionsOfUser != null){
+             
+             
+             for( i=0; i<connectionsOfUser.length;i++){
+                 connectionsIds.push(connectionsOfUser[i]._id);
+             }
+         }
+
+         if(connectionsOfUser2 != null){
+            for( i=0; i<connectionsOfUser2.length;i++){
+                connectionsIds.push(connectionsOfUser2[i]._id);
+            }
+         }
+         
+
+         
 
             var findOrientation="";
-            if(user.orientation== 's')
+            if(user.orientation== 'S')
                 {
                     item= await userCollection.find({
                         $and: [
-                        {location_pref:{ $in: user.location_pref }},
+                        // {location_pref:{ $in: user.location_pref }},
                         {_id: {$ne:user._id}},
                         {gender: {$ne:user.gender}},
                         {orientation: user.orientation},
+                        {connections:{ $nin: connectionsIds }},
         
                     ]    
                      }).toArray();
-                     console.log(item)
+                    //  console.log(item)
                 }
                 else{
                     item= await userCollection.find({
                         $and: [
-                        {location_pref:{ $in: user.location_pref }},
+                        // {location_pref:{ $in: user.location_pref }},
                         {_id: {$ne:user._id}},
                         {gender: user.gender},
                         {orientation: user.orientation},
+                        {connections:{ $nin: connectionsIds }},
         
                     ]    
                      }).toArray();
-                     console.log(item)
+                    //  console.log(item)
                 }
             
              return item;
