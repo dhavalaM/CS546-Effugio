@@ -24,7 +24,6 @@ app.use("/public", static);
 app.set('views', path.join(__dirname, 'views'));
 
 initData =  require('./data/startup2.js');
-console.log(initData);
 alldata =initData();
 
 console.log("The following data is added to the DB");
@@ -39,6 +38,25 @@ const handlebarsInstance = exphbs.create({
                 return new Handlebars.SafeString(JSON.stringify(obj, null, spacing));
         
             return new Handlebars.SafeString(JSON.stringify(obj));
+        },
+        select: function(selected, options) {
+            return options.fn(this)
+              .replace( new RegExp(' value=\"' + selected + '\"'), '$& selected="selected"')
+              .replace( new RegExp('>' + selected + '</option>'), ' selected="selected"$&');
+          },
+       multiselect:function(selected, options) {
+        var html = options.fn(this);
+        var selected = selected + '';
+        if (selected) {
+            var values = selected.split(',');
+            var length = values.length;
+    
+            for (var i = 0; i < length; i++) {
+                html = html.replace( new RegExp(' value=\"' + values[i] + '\"'), '$& selected="selected"');
+            }
+        }
+    
+        return html;
         }
     }
 });
