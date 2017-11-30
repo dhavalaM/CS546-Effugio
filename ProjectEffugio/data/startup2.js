@@ -75,10 +75,34 @@ async function userStartup(){
     
     userRose = makeDoc("rose_d", "Rose", "", "11/27/1989", "F", "Princeton","Dancer","S",
     "rose@titanic.com", [newTravel[0]._id, newTravel[1]._id],"1",[]);
-    
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("lilly", "lilly", "", "11/27/1989", "F", "Jerseycity","Student","B",
+    "lilly@titanic.com", [newTravel[1]._id, newTravel[2]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("mary", "mary", "", "11/27/1990", "F", "New York","Dancer","G",
+    "rose@titanic.com", [newTravel[3]._id, newTravel[1]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("anna", "Anna", "", "11/27/1989", "M", "Newark","Dancer","S",
+    "rose@titanic.com", [newTravel[4]._id, newTravel[1]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("jessi", "Jessica", "", "11/27/1989", "F", "Beverly hills","Dancer","S",
+    "rose@titanic.com", [newTravel[0]._id, newTravel[2]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("thomas", "Tom", "", "11/27/1989", "M", "cliffton","Dancer","G",
+    "rose@titanic.com", [newTravel[2]._id, newTravel[1]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("dani", "Dani", "", "11/27/1989", "F", "Monreal","Dancer","B",
+    "rose@titanic.com", [newTravel[3]._id, newTravel[1]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("mango", "Mango", "", "11/27/1989", "M", "Hoboken","Dancer","S",
+    "rose@titanic.com", [newTravel[0]._id, newTravel[4]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
+    userRose = makeDoc("lux", "Lux", "", "11/27/1989", "F", "Brooklyn","Dancer","S",
+    "rose@titanic.com", [newTravel[2]._id, newTravel[1]._id],"1",[]);
+    rosedb= await users.addUser(userRose, "password");
     jackdb= await users.addUser(userJack,"iamagambler");
    
-    rosedb= await users.addUser(userRose, "iliketodance");
+    //rosedb= await users.addUser(userRose, "iliketodance");
 
     return [jackdb, rosedb];
 
