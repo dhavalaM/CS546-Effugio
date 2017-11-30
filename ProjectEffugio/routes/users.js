@@ -5,6 +5,8 @@ var Strategy = require('passport-local').Strategy;
 const data = require("../data");
 const userData= data.users;
 const travelData=data.travel;
+const budgetData=data.budget;
+
 var setCookie = require('set-cookie-parser');
 
 passport.use(new Strategy(
@@ -119,25 +121,19 @@ function(req, res){
 
 router.get('/dashboard',
 require('connect-ensure-login').ensureLoggedIn("/"),
-function(req, res){
-  userData.getSuggestedUsers(req.user).then(suggestedUsers=>{
-    if(suggestedUsers!= null){
-      // for (user in users){
-        // req.body.addUser(user);
-        
-        res.render('users/dashboard', { users: suggestedUsers,
-          user:req.user,
-          helpers: {
-            toage: function (dob) { return getAge(dob); }
-        }},
-      );
-          // }
-          // res.render('users/dashboard', { user: users});
-    }
-  });
-  
-  
-  //res.render('users/dashboard', { user: null});
+async function(req, res){
+  suggestedUsers= await userData.getSuggestedUsers(req.user);
+  if(suggestedUsers!= null){
+    console.log("suggested users:: ");
+    console.log(suggestedUsers);
+      
+      res.render('users/dashboard', { users: suggestedUsers,
+        user:req.user,
+        helpers: {
+          toage: function (dob) { return getAge(dob); }
+      }},
+    );
+  }
 });
 
 
@@ -171,7 +167,17 @@ router.get('/logout',function(req, res){
 });
 // Register
 router.get('/register', function(req, res){
-	res.render('users/register');
+  travelData.getAllTravel().then(function(locations) {
+    //console.log(locations);
+    
+    budgetranges=budgetData.getAllBudget();
+   //console.log(budgetranges);
+    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
+    
+}, function(errorMessage) {
+    response.status(500).json({ error: errorMessage });
+});
+	
 });
 // Register User
 router.post('/register', function(req, res){
@@ -189,7 +195,7 @@ router.post('/register', function(req, res){
 	  req.checkBody('user_id', 'Username is required').notEmpty();
 	  req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
-    req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
+    //req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
   var errors = req.validationErrors();
   
 	if(errors){
@@ -220,12 +226,25 @@ router.post('/register', function(req, res){
       orientation:req.body.orientation,
       contactInformation:req.body.contactInformation,
       email:req.body.email ,
-      budget:req.body.budgetPreference
+      budget:req.body.budgetPreference,
+      locationpref:req.body.locationpref
     };
     console.log(errors_user.location);
-    res.render('users/register',{
+   /*  res.render('users/register',{
       errors:errors,user:errors_user
-    });
+    }); */
+  travelData.getAllTravel().then(function(locations) {
+      //console.log(locations);
+      
+      budgetranges=budgetData.getAllBudget();
+      //console.log(budgetranges);
+      res.render('users/register', {locations:locations, budgetranges:budgetranges,errors:errors,user:errors_user} );
+      
+  }, function(errorMessage) {
+      response.status(500).json({ error: errorMessage });
+  });
+
+
 	} else {
     /* userData.getUserbyUserId(req.body.user_id).then(function(user) {
       if(user){
@@ -238,21 +257,12 @@ router.post('/register', function(req, res){
       console.log("location pref length:"+req.body.locationpref.length);
     if(typeof(req.body.locationpref) === "object" ){
       for (i = 0; i < req.body.locationpref.length; i++) { 
-        var myloc=req.body.locationpref[i];
-        travelData.getIdByLocation(myloc).then(function(loc) {
-          _location_pref.push(loc._id);
-      }, function(errorMessage) {
-          response.status(500).json({ error: errorMessage });
-      });
+        var myloc=req.body.locationpref[i]; 
+        _location_pref.push(myloc);
       }
     }else{
       var myloc=req.body.locationpref;
-      travelData.getIdByLocation(myloc).then(function(loc) {
-        //console.log("loc"+loc._id);
-        _location_pref.push(loc._id);
-    }, function(errorMessage) {
-        response.status(500).json({ error: errorMessage });
-    });
+        _location_pref.push(myloc);
     }
     }
     const newUser = {
@@ -274,11 +284,12 @@ router.post('/register', function(req, res){
     userData.addUser(newUser,newUser.password).then((addedUser)=>{
     console.log("added new user");
     console.log(addedUser);
+    
+    req.flash('success_msg', 'You are registered and can now login');
+    res.redirect('/users/login');
     });
   
-		req.flash('success_msg', 'You are registered and can now login');
-
-    res.redirect('/users/login');
+		
     
 	}
 });

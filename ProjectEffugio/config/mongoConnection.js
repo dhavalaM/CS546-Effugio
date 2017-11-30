@@ -1,5 +1,9 @@
 const MongoClient = require("mongodb").MongoClient;
 runStartup = require("./startup.js");
+//runStartup2 = require("../date/startup2.js");
+
+
+
 
 const settings = {
     mongoConfig: {
@@ -16,7 +20,7 @@ runStartup().then(function(alluser) {
     console.log(alluser);
 });
 
-let connectDb = () => {
+let connectDb = (async) => {
     if (!_connection) {
         _connection = MongoClient.connect(fullMongoUrl)
             .then((db) => {
@@ -26,5 +30,8 @@ let connectDb = () => {
 
     return _connection;
 };
+//console.log(runstartup2);
+//allusers = await runStartup2.connectionStartup();
+//console.log(allusers);
 
 module.exports = connectDb;
