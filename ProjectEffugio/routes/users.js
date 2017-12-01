@@ -5,6 +5,7 @@ var Strategy = require('passport-local').Strategy;
 const data = require("../data");
 const userData= data.users;
 const travelData=data.travel;
+const budgetData= data.budget;
 var setCookie = require('set-cookie-parser');
 
 passport.use(new Strategy(
@@ -132,6 +133,33 @@ async function(req, res){
       }},
     );
   }
+});
+
+router.get('/checkprofile/:id',
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  console.log("id:: "+req.params.id);
+  checkuser= await userData.getUser(req.params.id);
+  locations=await travelData.getAllTravel();
+  res.render('users/checkprofile', { user: req.user,checkuser:checkuser,
+    helpers: {
+      toage: function (dob) { return getAge(dob); },
+      getlocation: function (id) { 
+       for(i=0;i<locations.length;i++){
+        console.log("i:: "+i+" locations[i]._id:: "+locations[i]._id);
+         if(locations[i]._id == id)
+            return locations[i].name;
+       }},
+       getbudget: function (id) { 
+        
+             return budgetData.getBudgetById(id);
+        },
+
+        button: function () { 
+            console.log("button clicked");
+              //  return budgetData.getBudgetById(id);
+          }
+  }});
 });
 
 
