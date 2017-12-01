@@ -260,6 +260,33 @@ async function(req, res){
   }
 });
 
+router.get('/checkprofile/:id',
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  console.log("id:: "+req.params.id);
+  checkuser= await userData.getUser(req.params.id);
+  locations=await travelData.getAllTravel();
+  res.render('users/checkprofile', { user: req.user,checkuser:checkuser,
+    helpers: {
+      toage: function (dob) { return getAge(dob); },
+      getlocation: function (id) { 
+       for(i=0;i<locations.length;i++){
+        console.log("i:: "+i+" locations[i]._id:: "+locations[i]._id);
+         if(locations[i]._id == id)
+            return locations[i].name;
+       }},
+       getbudget: function (id) { 
+        
+             return budgetData.getBudgetById(id);
+        },
+
+        button: function () { 
+            console.log("button clicked");
+              //  return budgetData.getBudgetById(id);
+          }
+  }});
+});
+
 
 function getAge(dateString) {
   var today = new Date();
@@ -331,6 +358,7 @@ router.post('/register', function(req, res){
 	  req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
     //req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
+    req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
   var errors = req.validationErrors();
   
 	if(errors){
@@ -419,7 +447,7 @@ router.post('/register', function(req, res){
     userData.addUser(newUser,newUser.password).then((addedUser)=>{
     console.log("added new user");
     console.log(addedUser);
-    
+
     req.flash('success_msg', 'You are registered and can now login');
     res.redirect('/users/login');
     });
