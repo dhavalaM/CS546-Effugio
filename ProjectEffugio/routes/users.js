@@ -196,6 +196,7 @@ router.post('/register', function(req, res){
 	  req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
     //req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
+    req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
   var errors = req.validationErrors();
   
 	if(errors){
@@ -284,7 +285,7 @@ router.post('/register', function(req, res){
     userData.addUser(newUser,newUser.password).then((addedUser)=>{
     console.log("added new user");
     console.log(addedUser);
-    
+
     req.flash('success_msg', 'You are registered and can now login');
     res.redirect('/users/login');
     });
