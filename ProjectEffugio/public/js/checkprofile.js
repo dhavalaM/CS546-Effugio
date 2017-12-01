@@ -9,6 +9,7 @@
       // var subtractButton = $("#subtract");
       // var multiplyButton = $("#multiply");
       var modal = $("#myModal");
+      console.log("welcoem to jquery");
   
       function extractInputs() {
           // first, we check if there are values
@@ -110,8 +111,8 @@
         
             //get data-id attribute of the clicked element
             var location = $(e.relatedTarget).data('location');
-            console.log("location on modal:: "+location)
-        
+            console.log("location on modal:: "+location);
+            alert('Hi');
             //populate the textbox
             // $(e.currentTarget).find('input[name="bookId"]').val(bookId);
         });

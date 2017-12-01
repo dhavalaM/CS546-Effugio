@@ -7,19 +7,19 @@
 
                 </div>
                 <div class="avatar">
-                    <img alt="" src="http://lorempixel.com/100/100/people/9/">
+                    <img alt="" src="https://bootdey.com/img/Content/user_2.jpg">
                 </div>
                 <div class="info">
                     <div class="title">
                        {{checkuser.name }}
                     </div>
                     <div class="desc">Lives in {{checkuser.location}}</div>
-                    <div class="desc">Occupation: {{checkuser.Occupation}}</div>
+                    <div class="desc">Occupation: {{checkuser.occupation}}</div>
                     <div class="desc">{{{toage checkuser.dob }}} years</div>
                     <div class="desc">Budget range: {{{getbudget checkuser.budget }}} $</div>
                     <ul  style="list-style: none" class="desc"> Select the location to connect:
                             {{#each checkuser.location_pref}}
-                            <li><a href="#myModal" data-location={{{getlocation this}}} data-toggle="modal">{{{ getlocation this}}}</a>
+                            <li><a href="#myModal" data-toggle="modal">{{{ getlocation this}}}</a>
                                 </li>
                                 {{/each}}
                             </ul>
@@ -40,25 +40,18 @@
                 <h4 class="modal-title">Confirmation</h4>
             </div>
             <div class="modal-body">
-                <p>Hello! Let's Effugio to {{data-location}}?</p>
+                <p>Hello! Let's Effugio to ?</p>
                 </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="{{{button}}}">Connect</button>
+                <button type="button" class="btn btn-primary" onclick={{{button}}}>Connect</button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
 <script type="text/javascript" src="/public/js/checkprofile.js">
-$('#myModal').on('show.bs.modal', function(e) {
-        
-            //get data-id attribute of the clicked element
-            var location = $(e.relatedTarget).data('location');
-            console.log("location on modal:: "+location)
-        
-            //populate the textbox
-            // $(e.currentTarget).find('input[name="bookId"]').val(bookId);
-        });
+
 </script>

@@ -151,9 +151,12 @@ async function(req, res){
          if(locations[i]._id == id)
             return locations[i].name;
        }},
+       
        getbudget: function (id) { 
         
-             return budgetData.getBudgetById(id);
+             val= budgetData.getBudgetById( parseInt(id));
+             console.log("budget:: "+val);
+             return val;
         },
 
         button: function () { 
