@@ -11,10 +11,11 @@
   </div>
   <div class="form-group">
     <label>Gender</label>
-    <select class="custom-select form-control" name="gender" value={{ user.gender }}>
-      <option selected>{{ user.gender}}</option>
-      <option value="M">Male</option>
-      <option value="F">Female</option>
+    <select class="custom-select form-control" name="gender">
+      {{#multiselect user.gender}}
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      {{/multiselect}}
     </select>
   </div>
   <div class="form-group"> <!-- Date input -->
@@ -31,11 +32,12 @@
   </div>
   <div class="form-group">
     <label>Orientation</label>
-    <select class="custom-select form-control" name="orientation" value={{ user.orientation }}>
-      <option selected>{{ user.orientation }}</option>
-      <option value="s">Straight</option>
-      <option value="g">Gay</option>
-      <option value="l">Lesbian</option>
+    <select class="custom-select form-control" name="orientation">
+      {{#multiselect user.orientation}}
+      <option value="S">Straight</option>
+      <option value="G">Gay</option>
+      <option value="L">Lesbian</option>
+      {{/multiselect}}
     </select>
   </div>
   <div class="form-group">
@@ -46,24 +48,21 @@
   <div class="form-group">
     <label for="locationpref">Location Preference</label>
     <select multiple class="form-control" id="locationpref" name="locationpref">
-      <option value="New York">New York</option>
-      <option value="New Jersey">New Jersey</option>
-      <option value="Connecticut">Connecticut</option>
-      <option value="Baltimore">Baltimore</option>
-      <option value="Chicago">Chicago</option>
+      {{#multiselect user.locationpref}}
+      {{#each locations}}
+          <option value="{{this._id}}">{{this.name}}</option>
+      {{/each}}
+      {{/multiselect}}
     </select>
   </div>
-{{!--    <div class="form-group">
-    <label>Budget Preference</label>
-    <input type="text" class="form-control" placeholder="Budget Preference" name="budgetPreference" value={{ budgetPreference }} >
-  </div> --}}
   <div class="form-group">
     <label>Budget Preference</label>
-    <select class="custom-select form-control" name="budgetPreference" value={{ user.budgetPreference }}>
-      <option selected>{{ user.budgetPreference}}</option>
-      <option value="1">100-500</option>
-      <option value="2">500-1000</option>
-      <option value="3">1000-1500</option>
+    <select class="custom-select form-control" name="budgetPreference" >
+        {{#multiselect user.budget}}
+          {{#each budgetranges}}
+            <option value="{{this.id}}">{{this.range}}</option>
+          {{/each}}
+        {{/multiselect}}  
     </select>
   </div>
   <div class="form-group">
