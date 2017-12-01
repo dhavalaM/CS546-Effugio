@@ -6,7 +6,8 @@ const usersList=mongoCollections.users;
 var ObjectID=require('mongodb').ObjectID;
 var bcrypt = Promise.promisifyAll(require("bcrypt"));
 const connections = require("./connection");
-
+//const travels = require("./travel");
+//const budgets = require("./budget");
 
 
 let exportedMethods = {
@@ -45,17 +46,20 @@ let exportedMethods = {
         allusers=[];
         oneUser={};
 
+        //NM - Corrected spelling of orientation, added email and contact_info attributes
         for(var val of listOfUsers){
             oneUser={};
             oneUser._id=val._id;
-            oneUser.user_id=val.user_id
+            oneUser.user_id=val.user_id;
             oneUser.name=val.name;
             oneUser.hashedPassword=val.hashedPassword;
             oneUser.dob=val.dob;
             oneUser.gender=val.gender;
             oneUser.location=val.location;
             oneUser.occupation=val.occupation;
-            oneUser.orientation=val.orietation;
+            oneUser.orientation=val.orientation;
+            oneUser.contact_info=val.contact_info;
+            oneUser.email=val.email;
             oneUser.location_pref=val.location_pref;
             oneUser.connections=val.connections;
             oneUser.budget=val.budget
@@ -76,6 +80,7 @@ let exportedMethods = {
     },
 
     //add user to the collection
+    //NM - Corrected spelling of orientation, added email attribute
     async addUser(user,password) {
         
         const userCollection = await usersList();
@@ -112,6 +117,7 @@ let exportedMethods = {
     },
 
     //add connection to user
+    //NM - Corrected spelling of orientation, added email attribute
     async addConnection(id,connectedid) {
         if (typeof connectedid !== "string") throw "No connectedid provided";
  
@@ -126,7 +132,7 @@ let exportedMethods = {
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
-            orientation:oldUser.orinetation,
+            orientation:oldUser.orientation,
             contact_info:oldUser.contact_info,
             email:oldUser.email,
             budget:oldUser.budget,
@@ -142,7 +148,7 @@ let exportedMethods = {
         return await this.getUser(newUser._id);
     },
 
-    async updateUser(user,password) {
+    async updateUser(user) {
         
         oldUser=await this.getUser(user._id);
         const updatedUser = {
@@ -153,7 +159,7 @@ let exportedMethods = {
             gender:oldUser.gender,
             location:oldUser.location,
             occupation:oldUser.occupation,
-            orientation:oldUser.orinetation,
+            orientation:oldUser.orientation,
             contact_info:oldUser.contact_info,
             email:oldUser.email,
             budget:oldUser.budget,
@@ -161,6 +167,19 @@ let exportedMethods = {
             hashedPassword:oldUser.hashedPassword
            
         };
+
+        if(user.user_id){
+            //console.log("Inside duplicate username check in updateUser");
+            let usernameExists = await this.getUserbyUserId(user.user_id);
+            //console.log(usernameExists);
+            if((usernameExists)&&(usernameExists._id !== user._id)){
+                throw "This username already exists. Please pick another username";
+                return;
+            }
+            else{
+                updatedUser.user_id=user.user_id;
+            }
+        }
 
         //TODO: check here or in html??
         if(user.name != null){
@@ -171,6 +190,10 @@ let exportedMethods = {
             updatedUser.dob=user.dob;
         }
 
+        if(user.gender != null){
+            updatedUser.gender=user.gender;
+        }
+
         if(user.location != null){
             updatedUser.location=user.location;
         }
@@ -179,8 +202,8 @@ let exportedMethods = {
             updatedUser.occupation=user.occupation;
         }
 
-        if(user.orinetation != null){
-            updatedUser.orinetation=user.orinetation;
+        if(user.orientation != null){
+            updatedUser.orientation=user.orientation;
         }
 
         if(user.contact_info != null){
@@ -196,11 +219,13 @@ let exportedMethods = {
             updatedUser.location_pref=user.location_pref;
         }
 
-        result= await comparePassword(password,oldUser.hashedPassword);
+        /*
+        result= await this.comparePassword(password,oldUser.hashedPassword);
         if (!result){
             const hash = await bcrypt.hashAsync(password, 16.5);
             updatedUser.hashedPassword=hash;
-        }
+        }*/
+
 
         const userCollection = await usersList();
         // our first parameters is a way of describing the document to update;
@@ -244,11 +269,11 @@ let exportedMethods = {
         
          const userCollection = await usersList();
          
-         console.log("****************************************************");
+         //console.log("****************************************************");
          allusers= await this.getAllUsers();
-         console.log("all users");
-         console.log(allusers);
-         console.log("****************************************************");
+         //console.log("all users");
+         //console.log(allusers);
+         //console.log("****************************************************");
 
          connectionsOfUser= await connections.getConnectionByConnectedId(user._id);
          connectionsOfUser2=await connections.getConnectionByRequestorId(user._id);
@@ -309,8 +334,9 @@ let exportedMethods = {
             return result;
       },
 
+      //NM - added email
       async makeDoc (_id,user_id, name,hashedPassword,dob,gender,location,occupation,orientation,
-        contact_info) {
+        contact_info,email) {
         return {
             _id: uuidv1(),
             user_id:user_id,
@@ -322,6 +348,7 @@ let exportedMethods = {
             occupation:occupation,
             orientation:orientation,
             contact_info:contact_info,
+            email:email,
             location_pref:[],
             budget:"",
             connections:[]

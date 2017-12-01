@@ -9,7 +9,7 @@ const budget = [{id:1,range:"100-200"},{id:2,range:"200-300"},{id:3,range:"300-4
 {id:5,range:">500"}];
 
 module.exports={
-getBudgetById:  function(id){
+getBudgetById:  async function(id){
     for (var i = 0, len = budget.length; i < len; i++) {
         var record = budget[i];
         if (record.id === id) {
@@ -20,7 +20,7 @@ getBudgetById:  function(id){
     //return budget[id];
 },
 
-getIdByBudget:  function(inputBudget){
+getIdByBudget:  async function(inputBudget){
     for (var i = 0, len = budget.length; i < len; i++) {
         var record = budget[i];
         if (record.range === inputBudget) {
@@ -29,7 +29,7 @@ getIdByBudget:  function(inputBudget){
       }
     return null;
 },
-getAllBudget:  function(){
+getAllBudget:  async function(){
     return budget;
 }
 

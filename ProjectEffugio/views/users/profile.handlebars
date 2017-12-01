@@ -1,3 +1,120 @@
+<h2 class="page-header">My Profile</h2>
+{{#if hasErrors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{this}}</div>
+      {{/each}}
+{{/if}}
+{{#if updSuccess}}
+      <div class="alert alert-success">"Profile updated successfully"</div>
+{{/if}}
+<form method="post" action="/users/profile">
+  <div class="form-group">
+    <label for="name">Full Name</label>
+    <input type="text" class="form-control" placeholder="Name" name="name" id="name" pattern="[A-Za-z' ]+" minlength="2" maxlength="80" value="{{user.name}}" disabled="disabled">
+  </div>
+  <input type="hidden" id="name2" name="name" value="{{user.name}}">
+  <div class="form-group">
+        <label for="gender">Gender</label>
+        <select class="form-control" name="gender" id="gender" disabled="disabled">
+          {{#select user.gender}}
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          {{/select}}
+        </select>
+  </div>
+  <input type="hidden" id="gender2" name="gender" value="{{user.gender}}">
+  <div class="form-group"> <!-- Date input -->
+    <label for="dob">Date of Birth</label>
+        <input class="form-control" id="dob" name="dob" placeholder="MM/DD/YYY" type="text" value="{{user.dob}}" disabled="disabled">
+  </div>
+  <input type="hidden" name="dob" value="{{user.dob}}"> 
+  <!--Commenting Age part
+  <div class="form-group">
+    <label for="age">Age</label>
+    <input type="text" class="form-control" placeholder="Age" name="age" id="age" pattern="[1-9][0-9]" minlength="2" maxlength="2" value={{user.age}}>
+  </div>
+  -->
+  <div class="form-group">
+        <label for="location">Location</label>
+        <select class="form-control" name="location" id="location">
+          {{#select user.location}}
+          <option value="Vegas">Vegas</option>
+          <option value="New York">New York</option>
+          <option value="Atlantic City">Atlantic City</option>
+          <option value="Arizona">Arizona</option>
+          <option value="Mount Rushmore">Mount Rushmore</option>
+          {{/select}}
+        </select>
+  </div>
+  <div class="form-group">
+    <label for="occupation">Occupation</label>
+    <input type="text" class="form-control" placeholder="Occupation" name="occupation" id="occupation" pattern="[a-zA-Z]+[' -,]{0,1}[a-zA-Z]+" minlength="2" maxlength="80" value="{{user.occupation}}">
+  </div>
+  <div class="form-group">
+        <label for="orientation">Orientation</label>
+        <select class="form-control" name="orientation" id="orientation" disabled="disabled">
+          {{#select user.orientation}}
+          <option value="S">Straight</option>
+          <option value="G">Gay</option>
+          <option value="L">Lesbian</option>
+          {{/select}}
+        </select>
+  </div>
+  <input type="hidden" id="orientation2" name="orientation" value="{{user.orientation}}">
+  <div class="form-group">
+    <label for="contact_info">Contact Information</label>
+    <input type="text" class="form-control" placeholder="Phone: 9999999999" name="contact_info" id="contact_info" pattern="[1-9]{3}[0-9]{3}[0-9]{4}" value="{{user.contact_info}}">
+  </div>
+  <div class="form-group">
+    <label for="locationpref">Location Preferences</label>
+    <select multiple class="form-control" id="locationpref" name="location_pref">
+      {{#multiselect user.location_pref}}
+        {{#if locations.length}}
+          {{#each locations}}
+            <option value="{{this._id}}">{{this.name}}</option>
+          {{/each}}
+        {{/if}}
+      {{/multiselect}}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="budgetpref">Budget Preference</label>
+    <select class="custom-select form-control" id="budgetpref" name="budget">
+        {{#multiselect user.budget}}
+          {{#if budgetranges.length}}
+            {{#each budgetranges}}
+              <option value="{{this.id}}">{{this.range}}</option>
+            {{/each}}
+          {{/if}}
+        {{/multiselect}}  
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="user_id">Username</label>
+    <input type="text" class="form-control" placeholder="Username" name="user_id" id="user_id" pattern="[a-zA-Z1-9]+[_]{0,1}[a-zA-Z0-9]+" minlength="2" maxlength="50" value="{{user.user_id}}" disabled="disabled">
+  </div>
+  <input type="hidden" id="user_id2" name="user_id" value="{{user.user_id}}">
+   <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{user.email}}">
+  </div>
+  {{!--Commenting password fields
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" class="form-control" placeholder="Password" name="password">
+  </div>
+  <div class="form-group">
+    <label>New Password</label>
+    <input type="password" class="form-control" placeholder="Password" name="password2">
+  </div>
+  --}}
+  <button type="submit" class="btn btn-default">Update Profile</button>
+  <button type="reset" class="btn btn-default" value="Reset">Reset</button>
+  <input type="hidden" id="userId" name="_id" value="{{user._id}}">
+  <input type="hidden" id="userHashedPassword" name="hashedPassword" value="{{user.hashedPassword}}">
+</form>
+
+{{!--Commented out previous code
 <div class="jumbotron">
   <h1 class="display-3">Hello, {{user.username}}!</h1>
   <p class="lead">Welcome to your Profile Page</p>
@@ -5,7 +122,7 @@
   <p>
 User Name: {{user.user_id}}<br/>
 Name: {{user.name }}<br/>
-Age: {{user.dob}}<br/></p>
+Age: {{user.age}}<br/></p>
 Gender: {{user.gender}}<br/></p>
 Profession: {{user.occupation}}<br/>
 Location: {{user.location}}<br/>
@@ -13,7 +130,6 @@ orientation: {{user.orientation}}<br/>
 Locations: {{user.location_pref}}<br/>
 Connections: {{user.connections}}<br/>
 
-{{!--   <p class="lead">
-    <a class="btn btn-primary btn-lg" href="/logout" role="button">Log Out</a>
-  </p> --}}
+  </p> 
 </div>
+--}}

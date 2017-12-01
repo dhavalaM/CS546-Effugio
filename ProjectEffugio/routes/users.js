@@ -113,10 +113,134 @@ function(req, res) {
     res.render("users/profile", {});
 }); */
 
+//NM - Declaring errors empty list variable and adding new parameters - errors, hasErrors, updSuccess to res.render
 router.get('/profile',
 require('connect-ensure-login').ensureLoggedIn("/"),
-function(req, res){
-  res.render('users/profile', { user: req.user});
+async function(req, res){
+  let errors = [];
+  let alllocationprefs = [];
+  let budgetranges = [];
+  //let userLocPrefList = [];
+  //let userBudgetList = [];
+
+  try{
+    budgetranges = await budgetData.getAllBudget();
+    alllocationprefs = await travelData.getAllTravel();
+    //userLocPrefList = await userData.getLocPrefList(req.user._id);
+    //userBudgetList = await userData.getBudgetObj(req.user._id);
+  
+    res.render('users/profile', {
+      errors: errors,
+      hasErrors: false,
+      updSuccess: false,
+      user: req.user,
+      //userLocPrefs:userLocPrefList,
+      //userBudget:userBudgetList,
+      locations:alllocationprefs, 
+      budgetranges:budgetranges
+    });
+  }
+  catch(e){
+    errors.push(e);
+    res.render('users/profile', {
+      errors: errors,
+      hasErrors: true,
+      updSuccess: false,
+      user: req.user,
+      //userLocPrefs:userLocPrefList,
+      //userBudget:userBudgetList,
+      locations:alllocationprefs, 
+      budgetranges:budgetranges
+    });
+  }
+});
+
+//NM - added a post method for My Profile page to send user profile updates to the database
+router.post("/profile", async (req, res) => {
+  let updatedProfileData = req.body;
+  console.log("body: %j", req.body);
+  let errors = [];
+  let alllocationprefs = [];
+  let budgetranges = [];
+  //let userLocPrefList = [];
+  //let userBudgetList = [];
+
+  budgetranges = await budgetData.getAllBudget();
+  alllocationprefs = await travelData.getAllTravel();
+  //userLocPrefList = await userData.getLocPrefList(updatedProfileData._id);
+  //userBudgetList = await userData.getBudgetObj(updatedProfileData._id);
+
+  //Converting the age from string (default datatype from HTML forms) to number for storing in database as integer
+  //if (updatedProfileData.age) {
+  //  updatedProfileData.age = Number(updatedProfileData.age);
+  //}
+
+  /*
+  if (!blogPostData.body) {
+    errors.push("No body provided");
+  }
+*/
+
+if (errors.length > 0) {
+  //console.log("Inside errors.length if");
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: true,
+    updSuccess: false,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+  return;
+}
+
+try{
+  //console.log("Inside try");
+  if(req.body.location_pref){
+    let locationPrefList=[];
+    //console.log("location pref length:"+req.body.location_pref.length);
+    if(typeof(req.body.location_pref) === "object" ){
+      for (i = 0; i < req.body.location_pref.length; i++) { 
+        let myloc=req.body.location_pref[i]; 
+        locationPrefList.push(myloc);
+      }
+    }else{
+      let myloc=req.body.location_pref;
+      locationPrefList.push(myloc);
+    }
+    updatedProfileData.location_pref=locationPrefList;
+  }
+  
+  let updatedUserProfile = await userData.updateUser(updatedProfileData,updatedProfileData.hashedPassword);
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: false,
+    updSuccess: true,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+  return;
+}
+catch(e){
+  //console.log("Inside catch");
+  //res.status(500).json({ error: e });
+  errors.push(e);
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: true,
+    updSuccess: false,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+}
 });
 
 router.get('/dashboard',
@@ -124,8 +248,8 @@ require('connect-ensure-login').ensureLoggedIn("/"),
 async function(req, res){
   suggestedUsers= await userData.getSuggestedUsers(req.user);
   if(suggestedUsers!= null){
-    console.log("suggested users:: ");
-    console.log(suggestedUsers);
+    //console.log("suggested users:: ");
+    //console.log(suggestedUsers);
       
       res.render('users/dashboard', { users: suggestedUsers,
         user:req.user,
@@ -196,17 +320,28 @@ router.get('/logout',function(req, res){
   res.redirect('/login');
 });
 // Register
-router.get('/register', function(req, res){
+router.get('/register', async function(req, res){
+  
+  try{
+    let locations = await travelData.getAllTravel();
+    let budgetranges = await budgetData.getAllBudget();
+
+    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
+  }
+  catch(e){
+    response.status(500).json({ error: e });
+  }
+  /*
   travelData.getAllTravel().then(function(locations) {
     //console.log(locations);
     
-    budgetranges=budgetData.getAllBudget();
+    budgetranges=await budgetData.getAllBudget();
    //console.log(budgetranges);
     res.render('users/register', {locations:locations, budgetranges:budgetranges} );
     
 }, function(errorMessage) {
     response.status(500).json({ error: errorMessage });
-});
+});*/
 	
 });
 // Register User
