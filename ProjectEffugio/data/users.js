@@ -6,7 +6,8 @@ const usersList=mongoCollections.users;
 var ObjectID=require('mongodb').ObjectID;
 var bcrypt = Promise.promisifyAll(require("bcrypt"));
 const connections = require("./connection");
-
+//const travels = require("./travel");
+//const budgets = require("./budget");
 
 
 let exportedMethods = {
@@ -45,7 +46,7 @@ let exportedMethods = {
         allusers=[];
         oneUser={};
 
-        //NM - Corrected spelling of orientation, added email attribute
+        //NM - Corrected spelling of orientation, added email and contact_info attributes
         for(var val of listOfUsers){
             oneUser={};
             oneUser._id=val._id;
@@ -56,7 +57,9 @@ let exportedMethods = {
             oneUser.gender=val.gender;
             oneUser.location=val.location;
             oneUser.occupation=val.occupation;
-            oneUser.orientation=val.orietation;
+            oneUser.orientation=val.orientation;
+            oneUser.contact_info=val.contact_info;
+            oneUser.email=val.email;
             oneUser.location_pref=val.location_pref;
             oneUser.connections=val.connections;
             oneUser.budget=val.budget
@@ -145,7 +148,7 @@ let exportedMethods = {
         return await this.getUser(newUser._id);
     },
 
-    async updateUser(user,password) {
+    async updateUser(user) {
         
         oldUser=await this.getUser(user._id);
         const updatedUser = {
@@ -216,11 +219,13 @@ let exportedMethods = {
             updatedUser.location_pref=user.location_pref;
         }
 
-        result= await comparePassword(password,oldUser.hashedPassword);
+        /*
+        result= await this.comparePassword(password,oldUser.hashedPassword);
         if (!result){
             const hash = await bcrypt.hashAsync(password, 16.5);
             updatedUser.hashedPassword=hash;
-        }
+        }*/
+
 
         const userCollection = await usersList();
         // our first parameters is a way of describing the document to update;
@@ -264,11 +269,11 @@ let exportedMethods = {
         
          const userCollection = await usersList();
          
-         console.log("****************************************************");
+         //console.log("****************************************************");
          allusers= await this.getAllUsers();
-         console.log("all users");
-         console.log(allusers);
-         console.log("****************************************************");
+         //console.log("all users");
+         //console.log(allusers);
+         //console.log("****************************************************");
 
          connectionsOfUser= await connections.getConnectionByConnectedId(user._id);
          connectionsOfUser2=await connections.getConnectionByRequestorId(user._id);
@@ -329,8 +334,9 @@ let exportedMethods = {
             return result;
       },
 
+      //NM - added email
       async makeDoc (_id,user_id, name,hashedPassword,dob,gender,location,occupation,orientation,
-        contact_info) {
+        contact_info,email) {
         return {
             _id: uuidv1(),
             user_id:user_id,
@@ -342,6 +348,7 @@ let exportedMethods = {
             occupation:occupation,
             orientation:orientation,
             contact_info:contact_info,
+            email:email,
             location_pref:[],
             budget:"",
             connections:[]
