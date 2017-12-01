@@ -11,8 +11,9 @@ const settings = {
     }
 };
 
+//NM - added email
 var makeDoc = function (user_id, name, hashedPassword, dob, gender, location, occupation, orientation,
-    contact_info, loc_pref, bud, con) {
+    contact_info, email, loc_pref, bud, con) {
     return {
         _id: uuidv1(),
         user_id: user_id,
@@ -24,6 +25,7 @@ var makeDoc = function (user_id, name, hashedPassword, dob, gender, location, oc
         occupation: occupation,
         orientation: orientation,
         contact_info: contact_info,
+        email: email,
         location_pref: loc_pref,
         budget: bud,
         connections: con
@@ -63,17 +65,20 @@ let _connection = undefined
 async function runSetup() {
 
     // create db connection
-    db = await MongoClient.connect(fullMongoUrl);
+    const db = await MongoClient.connect(fullMongoUrl);
 
     // adding travel data seed
-    await db.collection(travel).drop();
+    //NM - Commenting the below collection drop line as starting the application gives 'MongoError: ns not found' error
+    //NM - According to lecturer's code dropping the database rather than a specific collection.
+    //await db.collection(travel).drop();
+    await db.dropDatabase();
     travelCollection = await db.createCollection(travel);
 
     placeDes = [["Vegas", "Party, Casinos, Night life"],
     ["Atlantic City", "Casino, Beach, Night Life"],
     ["Arizona", "National Parks, Nature, Scenic"],
     ["Mount Rushmore", "National memorial"],
-    ["New Work", "City Culture, Night life, Museums, Parks, Bars"]];
+    ["New York", "City Culture, Night life, Museums, Parks, Bars"]];
     travelData = [];
     for (i = 0; i < placeDes.length; i++) {
 
@@ -90,46 +95,47 @@ async function runSetup() {
 
 
     //adding users data seed
-
-    await db.collection(users).drop();
+    //NM - Commenting the below collection drop line as starting the application gives 'MongoError: ns not found' error
+   //await db.collection(users).drop();
     userCollection = await db.createCollection(users);
 
 
-    var userJack = makeDoc("jack_d", "Jack Dawson", "", "01/01/1990", "M", "Hoboken", "Teacher", "S", "jack_d@gmail.com",
+    var userJack = makeDoc("jack_d", "Jack Dawson", "", "01/01/1990", "M", "Hoboken", "Teacher", "S", "5516788900","jack_d@gmail.com",
         [travelData[0]._id, travelData[1]._id], "1", []);
     userJack.hashedPassword = "$2a$16$mEbkQxGZt3a/qidjcCb6O..ah9yyDlGRj2lWpSK/ebQJJjSp1ISmS";
     //password: password
 
-    var userRose = makeDoc("rose_d", "Rose Dewitt", "", "11/03/1995", "F", "Hoboken", "Dancer", "S", "rose_d@gmail.com",
+    var userRose = makeDoc("rose_d", "Rose Dewitt", "", "11/03/1995", "F", "Hoboken", "Dancer", "S", "5516787000","rose_d@gmail.com",
         [travelData[1]._id, travelData[2]._id], "1", []);
 
     userlily = makeDoc("lilly", "Lilly Evans", "", "11/27/1989", "F", "Jerseycity", "Student", "L",
-        "lilly_evans123@gmail.com", [travelData[1]._id, travelData[2]._id], "1", []);
+    "5516786000","lilly_evans123@gmail.com", [travelData[1]._id, travelData[2]._id], "1", []);
 
 
-    usermary = makeDoc("mary", "Mary Morgan", "", "11/27/1990", "F", "New York", "Bartender", "S",
+    usermary = makeDoc("mary", "Mary Morgan", "", "11/27/1990", "F", "New York", "Bartender", "S", "2416788900",
         "mary657@gmail.com", [travelData[3]._id, travelData[1]._id], "2", []);
 
 
 
     useranna = makeDoc("anna", "Anna James", "", "11/27/1989", "M", "Newark", "Pet shop owner", "S",
-        "anna_james@gmail.com", [travelData[4]._id, travelData[1]._id], "3", []);
+    "2216788900","anna_james@gmail.com", [travelData[4]._id, travelData[1]._id], "3", []);
 
 
-    userjessi = makeDoc("jessi", "Jessica Charles", "", "11/27/1989", "F", "Beverly hills", "Chef", "S",
+    userjessi = makeDoc("jessi", "Jessica Charles", "", "11/27/1989", "F", "Beverly hills", "Chef", "S", "5516787777",
         "jessica.baker@gmail.com", [travelData[0]._id, travelData[2]._id], "1", []);
 
 
-    userthomas = makeDoc("thomas", "Tom Marvolo", "", "11/27/1989", "M", "Cliffton", "Software Engineer", "G",
+    userthomas = makeDoc("thomas", "Tom Marvolo", "", "11/27/1989", "M", "Cliffton", "Software Engineer", "G", "5511118900",
         "tom.riddle@gmail.com", [travelData[2]._id, travelData[1]._id], "1", []);
 
 
-    userdane = makeDoc("dani", "Daniel Cliff", "", "11/27/1989", "F", "Chicago", "Dancer", "L",
+    userdane = makeDoc("dani", "Daniel Cliff", "", "11/27/1989", "F", "Chicago", "Dancer", "L", "5512228900",
         "daniel.cliff@gmail.com", [travelData[3]._id, travelData[1]._id], "2", []);
 
 
     // adding connections data seed
-    await db.collection(connections).drop();
+    //NM - Commenting the below collection drop line as starting the application gives 'MongoError: ns not found' error
+    //await db.collection(connections).drop();
     connectionsColl = await db.createCollection(connections);
     coonection1=makeConDoc(userJack._id,userRose._id,"pending",travelData[1]._id,"11/27/2017");
     await connectionsColl.insert(coonection1);
