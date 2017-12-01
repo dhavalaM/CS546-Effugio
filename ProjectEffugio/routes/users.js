@@ -10,35 +10,29 @@ const budgetData=data.budget;
 var setCookie = require('set-cookie-parser');
 
 passport.use(new Strategy(
-    function(username, password, cb) {
-        console.log("user: pass:"+username+" "+password);
-        userData.getUserbyUserId(username).then((user)=> {
-          // if (err) { return cb(err); }
-          //if (!user) { return cb(null, false); }
-          if(!user){
-            return cb(null, false, { message: 'Unknown User'});
-          }
-          userData.comparePassword(password, user.hashedPassword).then((isMatch)=>{
-            // if(err) throw err;
-            if(isMatch){
-              return cb(null, user);
-            } else {
-              return cb(null, false, { message: 'Invalid password'});
-            }
-        });
-      });
+  async function(username, password, cb) {
+      console.log("user: pass:"+username+" "+password);
+      var user= await userData.getUserbyUserId(username);
+      if(!user){
+          return cb(null, false, { message: 'Unknown User'});
+      }
+      var isMatch = await userData.comparePassword(password, user.hashedPassword);
+      if(isMatch){
+        return cb(null, user);
+      } else {
+            return cb(null, false, { message: 'Invalid password'});
+      }
+
 }));
 
-
-passport.serializeUser(function(user, cb) {
+passport.serializeUser( function(user, cb) {
     cb(null, user._id);
   });
   
-passport.deserializeUser(function(id, cb) {
-  userData.getUser(id).then((user)=> {
-      
-      cb(null, user);
-    });
+passport.deserializeUser(async function(id, cb) {
+  var user = await userData.getUser(id);
+  cb(null, user);
+  
 });
 
 
@@ -50,69 +44,7 @@ function(req, res) {
   }else{
     res.redirect('/profile');  
   }
-
-  /************************************************************************** */
-  //For test
-  /*userData.getAllUsers().then((result)=>{
-    console.log("Got all users:: ");
-    console.log(result);
-
-    userData.getUser(result[0]._id).then((firstUser)=>{
-      console.log("Got first users:: ");
-      console.log(firstUser);
-      userData.addConnection(result[0]._id,result[1]._id).then((updated)=>{
-        console.log("Updated first users:: ");
-        console.log(updated);
-        userData.getConnections(updated._id).then((connections)=>{
-          console.log("connections of id:: "+updated._id);
-          console.log(connections);
-          userToAdd={
-            user_id:"",
-            name:"Jamie Randall",
-            hashedpassword:"",
-            age:30,
-            gender:"M",
-            location:"Hoboken",
-            occupation:"Fireman",
-            orientation:"S",
-            contact_info:"4567891234",
-            location_pref:[],
-            connections:[]
-          }
-          userData.addUser(userToAdd,"password").then((addedUser)=>{
-            console.log("added new user");
-            console.log(addedUser);
-            userToAdd._id=addedUser._id;
-            userData.removeConnection(result[0]._id,result[1]._id).then((rem)=>{
-              console.log("removed:: ");
-              console.log(rem);
-              userData.getAllUsers().then((all)=>{
-                console.log("Got first users:: ");
-                console.log(all);
-                userToAdd.name="Jamie Randall R"
-                userData.updateUser(userToAdd).then((s)=>{
-                  console.log("updated:: ");
-                  console.log(s);
-                  res.json(s);
-                });
-              });
-            });
-          });
-          
-        });
-        
-      });
-      
-    });
-    
-  });*/
-  /************************************************************************** */
 });
-/* router.get("/profile",(req, res) => {
-  console.log("user"+req.user);
-    res.render("users/profile", {});
-}); */
-
 //NM - Declaring errors empty list variable and adding new parameters - errors, hasErrors, updSuccess to res.render
 router.get('/profile',
 require('connect-ensure-login').ensureLoggedIn("/"),
@@ -321,28 +253,17 @@ router.get('/register', async function(req, res){
   
   try{
     let locations = await travelData.getAllTravel();
-    let budgetranges = await budgetData.getAllBudget();
+    let budgetranges = budgetData.getAllBudget();
 
     res.render('users/register', {locations:locations, budgetranges:budgetranges} );
   }
   catch(e){
     response.status(500).json({ error: e });
   }
-  /*
-  travelData.getAllTravel().then(function(locations) {
-    //console.log(locations);
-    
-    budgetranges=await budgetData.getAllBudget();
-   //console.log(budgetranges);
-    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
-    
-}, function(errorMessage) {
-    response.status(500).json({ error: errorMessage });
-});*/
 	
 });
 // Register User
-router.post('/register', function(req, res){
+router.post('/register', async function(req, res){
 
 	// Validation
     req.checkBody('name', 'Name is required').notEmpty();
@@ -357,26 +278,12 @@ router.post('/register', function(req, res){
 	  req.checkBody('user_id', 'Username is required').notEmpty();
 	  req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
-    //req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
+    req.checkBody('budgetPreference', 'Budget Preference must be specified').notEmpty();
     req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
   var errors = req.validationErrors();
   
 	if(errors){
-  /*   res.render('users/register',{
-      errors:errors,
-      name:req.body.name ,
-      user_id:req.body.user_id,
-      password:req.body.password,
-      password2:req.body.password2,
-      dob:req.body.dob,
-      gender:req.body.gender,
-      location:req.body.location,
-      occupation:req.body.occupation,
-      orientation:req.body.orientation,
-      contactInformation:req.body.contactInformation,
-      email:req.body.email ,
-      budget:req.body.budgetPreference
-    }); */
+
     var errors_user={
       name:req.body.name ,
       user_id:req.body.user_id,
@@ -392,20 +299,10 @@ router.post('/register', function(req, res){
       budget:req.body.budgetPreference,
       locationpref:req.body.locationpref
     };
-    console.log(errors_user.location);
-   /*  res.render('users/register',{
-      errors:errors,user:errors_user
-    }); */
-  travelData.getAllTravel().then(function(locations) {
-      //console.log(locations);
-      
-      budgetranges=budgetData.getAllBudget();
-      //console.log(budgetranges);
-      res.render('users/register', {locations:locations, budgetranges:budgetranges,errors:errors,user:errors_user} );
-      
-  }, function(errorMessage) {
-      response.status(500).json({ error: errorMessage });
-  });
+
+    var locations = await travelData.getAllTravel();
+    budgetranges=budgetData.getAllBudget();
+    res.render('users/register', {locations:locations, budgetranges:budgetranges,errors:errors,user:errors_user} );
 
 
 	} else {
@@ -417,16 +314,16 @@ router.post('/register', function(req, res){
     }); */
     if(req.body.locationpref){
       var _location_pref=[];
-      console.log("location pref length:"+req.body.locationpref.length);
-    if(typeof(req.body.locationpref) === "object" ){
-      for (i = 0; i < req.body.locationpref.length; i++) { 
-        var myloc=req.body.locationpref[i]; 
+      //console.log("location pref length:"+req.body.locationpref.length);
+      if(typeof(req.body.locationpref) === "object" ){
+        for (i = 0; i < req.body.locationpref.length; i++) { 
+          var myloc=req.body.locationpref[i]; 
+          _location_pref.push(myloc);
+        }
+      }else{
+        var myloc=req.body.locationpref;
         _location_pref.push(myloc);
       }
-    }else{
-      var myloc=req.body.locationpref;
-        _location_pref.push(myloc);
-    }
     }
     const newUser = {
       user_id:req.body.user_id,
@@ -444,15 +341,12 @@ router.post('/register', function(req, res){
       location_pref:_location_pref,
       connections:[]
     };
-    userData.addUser(newUser,newUser.password).then((addedUser)=>{
+    addedUser=await userData.addUser(newUser,newUser.password);
     console.log("added new user");
     console.log(addedUser);
 
     req.flash('success_msg', 'You are registered and can now login');
-    res.redirect('/users/login');
-    });
-  
-		
+    res.redirect('/users/login');  
     
 	}
 });
