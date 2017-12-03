@@ -5,6 +5,8 @@ const mongoCollections = require("../config/mongoCollections");
 const connectionList=mongoCollections.connection;
 var ObjectID=require('mongodb').ObjectID;
 var bcrypt = Promise.promisifyAll(require("bcrypt"));
+var dateTime = require('node-datetime');
+const userdata=require('./users');
 
 let exportedMethods={
     async getConnectionById(_id){
@@ -52,25 +54,29 @@ let exportedMethods={
 	    }
 
 	    return allConnections;
-    },
-    async addConnection(connectionData){
+	},
+	
+    async addConnection(requestorid,connectedid){
         const connectionCollection = await connectionList();
-
+		var dt = dateTime.create();
+		var formatted = dt.format('m/d/Y H:M:S');
+		console.log(formatted);
 	    const newConnection = {
 	        _id: uuidv1(),
-	        requestor_id: connectionData.requestor_id,
-	        connected_id: connectionData.connected_id,
-	        status: connectionData.status,
-	        location_id: connectionData.location_id,
-	        date_initiated: connectionData.date_initiated
+	        requestor_id: requestorid,
+	        connected_id: connectedid,
+	        status: "pending",
+	        location_id: "",
+	        date_initiated: formatted
 	    };
 
 	    console.log(newConnection);
 	    const newInsertedInformation = await connectionCollection.insertOne(newConnection);
 	    const newId = newInsertedInformation.insertedId;
 	    console.log("inserted: "+newId);
-	    return await this.getConnectionById(newId);
-
+		conn= await this.getConnectionById(newId);
+		
+		return conn;
     },
 
     async removeConnection(_id){
