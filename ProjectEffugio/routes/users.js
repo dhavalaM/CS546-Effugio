@@ -11,49 +11,41 @@ const connectionData=data.connection;
 var setCookie = require('set-cookie-parser');
 
 passport.use(new Strategy(
-  function (username, password, cb) {
-    console.log("user: pass:" + username + " " + password);
-    userData.getUserbyUserId(username).then((user) => {
-      // if (err) { return cb(err); }
-      //if (!user) { return cb(null, false); }
-      if (!user) {
-        return cb(null, false, { message: 'Unknown User' });
+  async function(username, password, cb) {
+      console.log("user: pass:"+username+" "+password);
+      var user= await userData.getUserbyUserId(username);
+      if(!user){
+          return cb(null, false, { message: 'Unknown User'});
       }
-      userData.comparePassword(password, user.hashedPassword).then((isMatch) => {
-        // if(err) throw err;
-        if (isMatch) {
-          return cb(null, user);
-        } else {
-          return cb(null, false, { message: 'Invalid password' });
-        }
-      });
-    });
-  }));
+      var isMatch = await userData.comparePassword(password, user.hashedPassword);
+      if(isMatch){
+        return cb(null, user);
+      } else {
+            return cb(null, false, { message: 'Invalid password'});
+      }
 
+}));
 
-passport.serializeUser(function (user, cb) {
-  cb(null, user._id);
-});
-
-passport.deserializeUser(function (id, cb) {
-  userData.getUser(id).then((user) => {
-
-    cb(null, user);
+passport.serializeUser( function(user, cb) {
+    cb(null, user._id);
   });
+  
+passport.deserializeUser(async function(id, cb) {
+  var user = await userData.getUser(id);
+  cb(null, user);
+  
 });
 
 
 router.get('/login',
-  function (req, res) {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      res.render('users/login', { message: req.flash('error') });
-
-    } else {
-      res.redirect('/profile');
-    }
-
-  });
-
+function(req, res) {
+  if (!req.isAuthenticated || !req.isAuthenticated()) {      
+    res.render('users/login', { message: req.flash('error') });    
+    
+  }else{
+    res.redirect('/profile');  
+  }
+});
 //NM - Declaring errors empty list variable and adding new parameters - errors, hasErrors, updSuccess to res.render
 router.get('/profile',
   require('connect-ensure-login').ensureLoggedIn("/"),
@@ -310,91 +302,56 @@ router.get('/register', async function (req, res) {
 
   try {
     let locations = await travelData.getAllTravel();
-    let budgetranges = await budgetData.getAllBudget();
+    let budgetranges = budgetData.getAllBudget();
 
     res.render('users/register', { locations: locations, budgetranges: budgetranges });
   }
   catch (e) {
     response.status(500).json({ error: e });
   }
-  /*
-  travelData.getAllTravel().then(function(locations) {
-    //console.log(locations);
-    
-    budgetranges=await budgetData.getAllBudget();
-   //console.log(budgetranges);
-    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
-    
-}, function(errorMessage) {
-    response.status(500).json({ error: errorMessage });
-});*/
-
+	
 });
 // Register User
-router.post('/register', function (req, res) {
+router.post('/register', async function(req, res){
 
-  // Validation
-  req.checkBody('name', 'Name is required').notEmpty();
-  req.checkBody('gender', 'Gender is required').notEmpty().not().equals('Select Gender');
-  req.checkBody('email', 'Email is required').notEmpty();
-  req.checkBody('email', 'Email is not valid').isEmail();
-  req.checkBody('dob', 'Date of birth is required and should be a date').notEmpty();
-  //req.checkBody('location', 'Location is required').notEmpty();
-  req.checkBody('occupation', 'Occupation is required').notEmpty();
-  req.checkBody('orientation', 'Orientation is required').notEmpty().not().equals('Select Orientation');;
-  req.checkBody('contactInformation', 'Contact Information is required').notEmpty();
-  req.checkBody('user_id', 'Username is required').notEmpty();
-  req.checkBody('password', 'Password is required').notEmpty();
-  req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
-  //req.checkBody('budgetPreference', 'Budget Preference must be a number').isInt();
-  req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
+	// Validation
+    req.checkBody('name', 'Name is required').notEmpty();
+    req.checkBody('gender', 'Gender is required').notEmpty().not().equals('Select Gender');
+  	req.checkBody('email', 'Email is required').notEmpty();
+    req.checkBody('email', 'Email is not valid').isEmail();
+    req.checkBody('dob', 'Date of birth is required and should be a date').notEmpty();
+    //req.checkBody('location', 'Location is required').notEmpty();
+    req.checkBody('occupation', 'Occupation is required').notEmpty();
+    req.checkBody('orientation', 'Orientation is required').notEmpty().not().equals('Select Orientation');;
+    req.checkBody('contactInformation', 'Contact Information is required').notEmpty();
+	  req.checkBody('user_id', 'Username is required').notEmpty();
+	  req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+    req.checkBody('budgetPreference', 'Budget Preference must be specified').notEmpty();
+    req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
   var errors = req.validationErrors();
+  
+	if(errors){
 
-  if (errors) {
-    /*   res.render('users/register',{
-        errors:errors,
-        name:req.body.name ,
-        user_id:req.body.user_id,
-        password:req.body.password,
-        password2:req.body.password2,
-        dob:req.body.dob,
-        gender:req.body.gender,
-        location:req.body.location,
-        occupation:req.body.occupation,
-        orientation:req.body.orientation,
-        contactInformation:req.body.contactInformation,
-        email:req.body.email ,
-        budget:req.body.budgetPreference
-      }); */
-    var errors_user = {
-      name: req.body.name,
-      user_id: req.body.user_id,
-      password: req.body.password,
-      password2: req.body.password2,
-      dob: req.body.dob,
-      gender: req.body.gender,
-      location: req.body.location,
-      occupation: req.body.occupation,
-      orientation: req.body.orientation,
-      contactInformation: req.body.contactInformation,
-      email: req.body.email,
-      budget: req.body.budgetPreference,
-      locationpref: req.body.locationpref
+    var errors_user={
+      name:req.body.name ,
+      user_id:req.body.user_id,
+      password:req.body.password,
+      password2:req.body.password2,
+      dob:req.body.dob,
+      gender:req.body.gender,
+      location:req.body.location,
+      occupation:req.body.occupation,
+      orientation:req.body.orientation,
+      contactInformation:req.body.contactInformation,
+      email:req.body.email ,
+      budget:req.body.budgetPreference,
+      locationpref:req.body.locationpref
     };
-    console.log(errors_user.location);
-    /*  res.render('users/register',{
-       errors:errors,user:errors_user
-     }); */
-    travelData.getAllTravel().then(function (locations) {
-      //console.log(locations);
 
-      budgetranges = budgetData.getAllBudget();
-      //console.log(budgetranges);
-      res.render('users/register', { locations: locations, budgetranges: budgetranges, errors: errors, user: errors_user });
-
-    }, function (errorMessage) {
-      response.status(500).json({ error: errorMessage });
-    });
+    var locations = await travelData.getAllTravel();
+    budgetranges=budgetData.getAllBudget();
+    res.render('users/register', {locations:locations, budgetranges:budgetranges,errors:errors,user:errors_user} );
 
 
   } else {
@@ -404,16 +361,16 @@ router.post('/register', function (req, res) {
         let errorMessage="Username already exists";
       }
     }); */
-    if (req.body.locationpref) {
-      var _location_pref = [];
-      console.log("location pref length:" + req.body.locationpref.length);
-      if (typeof (req.body.locationpref) === "object") {
-        for (i = 0; i < req.body.locationpref.length; i++) {
-          var myloc = req.body.locationpref[i];
+    if(req.body.locationpref){
+      var _location_pref=[];
+      //console.log("location pref length:"+req.body.locationpref.length);
+      if(typeof(req.body.locationpref) === "object" ){
+        for (i = 0; i < req.body.locationpref.length; i++) { 
+          var myloc=req.body.locationpref[i]; 
           _location_pref.push(myloc);
         }
-      } else {
-        var myloc = req.body.locationpref;
+      }else{
+        var myloc=req.body.locationpref;
         _location_pref.push(myloc);
       }
     }
@@ -433,16 +390,13 @@ router.post('/register', function (req, res) {
       location_pref: _location_pref,
       connections: []
     };
-    userData.addUser(newUser, newUser.password).then((addedUser) => {
-      console.log("added new user");
-      console.log(addedUser);
+    addedUser=await userData.addUser(newUser,newUser.password);
+    console.log("added new user");
+    console.log(addedUser);
 
-      req.flash('success_msg', 'You are registered and can now login');
-      res.redirect('/users/login');
-    });
-
-
-
-  }
+    req.flash('success_msg', 'You are registered and can now login');
+    res.redirect('/users/login');  
+    
+	}
 });
 module.exports = router;
