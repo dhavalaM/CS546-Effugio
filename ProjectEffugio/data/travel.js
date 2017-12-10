@@ -15,16 +15,21 @@ let exportedMethods={
 	    const listOfTravels = await travelConnection.find().toArray();
 	    alltravels = [];
 
-	    for(var val of listOfTravels){
-	        oneTravel = {};
-	        oneTravel._id = val._id;
-	        oneTravel.name = val.name;
-	        oneTravel.description = val.description;
+		if(listOfTravels.length>0){
+			for(var val of listOfTravels){
+	        	oneTravel = {};
+	        	oneTravel._id = val._id;
+	        	oneTravel.name = val.name;
+	        	oneTravel.description = val.description;
 
-	        alltravels.push(oneTravel);
-	    }
-
-	    return alltravels;
+	        	alltravels.push(oneTravel);
+	    	}	
+			return alltravels;
+		}
+		else{
+			return null;
+		}
+	   
     },
     async getTravelById(_id){
 	
