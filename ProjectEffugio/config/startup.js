@@ -107,6 +107,8 @@ async function runSetup() {
 
     var userRose = makeDoc("rose_d", "Rose Dewitt", "", "11/03/1995", "F", "Hoboken", "Dancer", "S", "5516787000","rose_d@gmail.com",
         [travelData[1]._id, travelData[2]._id], "1", []);
+    userRose.hashedPassword = "$2a$16$biOzgZ.pj1lMO.sRg5MFZuAXLm5FCiWIuDu3hBO6.QXlEwrImJ28W";
+    //password: password2
 
     userlily = makeDoc("lilly", "Lilly Evans", "", "11/27/1989", "F", "Jerseycity", "Student", "L",
     "5516786000","lilly_evans123@gmail.com", [travelData[1]._id, travelData[2]._id], "1", []);
@@ -117,8 +119,8 @@ async function runSetup() {
 
 
 
-    useranna = makeDoc("anna", "Anna James", "", "11/27/1989", "M", "Newark", "Pet shop owner", "S",
-    "2216788900","anna_james@gmail.com", [travelData[4]._id, travelData[1]._id], "3", []);
+    useranna = makeDoc("anna", "James Dean", "", "11/27/1989", "M", "Newark", "Pet shop owner", "S",
+    "2216788900","james_dean@gmail.com", [travelData[4]._id, travelData[1]._id], "3", []);
 
 
     userjessi = makeDoc("jessi", "Jessica Charles", "", "11/27/1989", "F", "Beverly hills", "Chef", "S", "5516787777",
