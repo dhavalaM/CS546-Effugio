@@ -3,10 +3,10 @@ const router = express.Router();
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 const data = require("../data");
-const userData = data.users;
-const travelData = data.travel;
-const budgetData = data.budget;
-const connectionData=data.connection;
+const userData= data.users;
+const travelData=data.travel;
+const budgetData=data.budget;
+const connectionData = data.connection;
 
 var setCookie = require('set-cookie-parser');
 
@@ -48,45 +48,47 @@ function(req, res) {
 });
 //NM - Declaring errors empty list variable and adding new parameters - errors, hasErrors, updSuccess to res.render
 router.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    let errors = [];
-    let alllocationprefs = [];
-    let budgetranges = [];
-    //let userLocPrefList = [];
-    //let userBudgetList = [];
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  let errors = [];
+  let alllocationprefs = [];
+  let budgetranges = [];
+  //let userLocPrefList = [];
+  //let userBudgetList = [];
 
-    try {
-      budgetranges = await budgetData.getAllBudget();
-      alllocationprefs = await travelData.getAllTravel();
-      //userLocPrefList = await userData.getLocPrefList(req.user._id);
-      //userBudgetList = await userData.getBudgetObj(req.user._id);
+  try{
+    budgetranges = await budgetData.getAllBudget();
+    alllocationprefs = await travelData.getAllTravel();
+    //userLocPrefList = await userData.getLocPrefList(req.user._id);
+    //userBudgetList = await userData.getBudgetObj(req.user._id);
+  
+    res.render('users/profile', {
+      errors: errors,
+      hasErrors: false,
+      updSuccess: false,
+      user: req.user,
+      //userLocPrefs:userLocPrefList,
+      //userBudget:userBudgetList,
+      locations:alllocationprefs, 
+      budgetranges:budgetranges
+    });
+  }
+  catch(e){
+    errors.push(e);
+    res.render('users/profile', {
+      errors: errors,
+      hasErrors: true,
+      updSuccess: false,
+      user: req.user,
+      //userLocPrefs:userLocPrefList,
+      //userBudget:userBudgetList,
+      locations:alllocationprefs, 
+      budgetranges:budgetranges
+    });
+  }
+});
 
-      res.render('users/profile', {
-        errors: errors,
-        hasErrors: false,
-        updSuccess: false,
-        user: req.user,
-        //userLocPrefs:userLocPrefList,
-        //userBudget:userBudgetList,
-        locations: alllocationprefs,
-        budgetranges: budgetranges
-      });
-    }
-    catch (e) {
-      errors.push(e);
-      res.render('users/profile', {
-        errors: errors,
-        hasErrors: true,
-        updSuccess: false,
-        user: req.user,
-        //userLocPrefs:userLocPrefList,
-        //userBudget:userBudgetList,
-        locations: alllocationprefs,
-        budgetranges: budgetranges
-      });
-    }
-  });
+
 
 //NM - added a post method for My Profile page to send user profile updates to the database
 router.post("/profile", async (req, res) => {
@@ -114,129 +116,153 @@ router.post("/profile", async (req, res) => {
   }
 */
 
-  if (errors.length > 0) {
-    //console.log("Inside errors.length if");
-    res.render('users/profile', {
-      errors: errors,
-      hasErrors: true,
-      updSuccess: false,
-      user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
-      locations: alllocationprefs,
-      budgetranges: budgetranges
-    });
-    return;
-  }
+if (errors.length > 0) {
+  //console.log("Inside errors.length if");
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: true,
+    updSuccess: false,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+  return;
+}
 
-  try {
-    //console.log("Inside try");
-    if (req.body.location_pref) {
-      let locationPrefList = [];
-      //console.log("location pref length:"+req.body.location_pref.length);
-      if (typeof (req.body.location_pref) === "object") {
-        for (i = 0; i < req.body.location_pref.length; i++) {
-          let myloc = req.body.location_pref[i];
-          locationPrefList.push(myloc);
-        }
-      } else {
-        let myloc = req.body.location_pref;
+try{
+  //console.log("Inside try");
+  if(req.body.location_pref){
+    let locationPrefList=[];
+    //console.log("location pref length:"+req.body.location_pref.length);
+    if(typeof(req.body.location_pref) === "object" ){
+      for (i = 0; i < req.body.location_pref.length; i++) { 
+        let myloc=req.body.location_pref[i]; 
         locationPrefList.push(myloc);
       }
-      updatedProfileData.location_pref = locationPrefList;
+    }else{
+      let myloc=req.body.location_pref;
+      locationPrefList.push(myloc);
     }
-
-    let updatedUserProfile = await userData.updateUser(updatedProfileData, updatedProfileData.hashedPassword);
-    res.render('users/profile', {
-      errors: errors,
-      hasErrors: false,
-      updSuccess: true,
-      user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
-      locations: alllocationprefs,
-      budgetranges: budgetranges
-    });
-    return;
+    updatedProfileData.location_pref=locationPrefList;
   }
-  catch (e) {
-    //console.log("Inside catch");
-    //res.status(500).json({ error: e });
-    errors.push(e);
-    res.render('users/profile', {
-      errors: errors,
-      hasErrors: true,
-      updSuccess: false,
-      user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
-      locations: alllocationprefs,
-      budgetranges: budgetranges
-    });
-  }
+  
+  let updatedUserProfile = await userData.updateUser(updatedProfileData,updatedProfileData.hashedPassword);
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: false,
+    updSuccess: true,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+  return;
+}
+catch(e){
+  //console.log("Inside catch");
+  //res.status(500).json({ error: e });
+  errors.push(e);
+  res.render('users/profile', {
+    errors: errors,
+    hasErrors: true,
+    updSuccess: false,
+    user: updatedProfileData,
+    //userLocPrefs:userLocPrefList,
+    //userBudget:userBudgetList,
+    locations:alllocationprefs, 
+    budgetranges:budgetranges
+  });
+}
 });
 
 router.get('/dashboard',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    suggestedUsers = await userData.getSuggestedUsers(req.user);
-    if (suggestedUsers != null) {
-      //console.log("suggested users:: ");
-      //console.log(suggestedUsers);
-
-      res.render('users/dashboard', {
-        users: suggestedUsers,
-        user: req.user,
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  suggestedUsers= await userData.getSuggestedUsers(req.user);
+  if(suggestedUsers!= null){
+    //console.log("suggested users:: ");
+    //console.log(suggestedUsers);
+      
+      res.render('users/dashboard', { users: suggestedUsers,
+        user:req.user,
         helpers: {
           toage: function (dob) { return getAge(dob); }
-        }
-      },
-      );
+      }},
+    );
+  }
+});
+
+router.get('/connections',
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  connectionsToDisplay=[];    
+  userConnections = await userData.getConnections(req.user._id);
+  if(userConnections!= null){
+    
+    
+    for(i=0;i<userConnections.length;i++){
+      oneConnectionDisplay={};
+      connectionDetails = await connectionData.getConnectionById(userConnections[i]);
+      if(connectionDetails.requestor_id == req.user._id){
+        userConnectionID = connectionDetails.connected_id;
+      }
+      else{
+        userConnectionID = connectionDetails.requestor_id;
+      }
+    
+      connectionUser = await userData.getUser(userConnectionID);
+      oneConnectionDisplay["_id"] = connectionUser._id;
+      oneConnectionDisplay["connection_id"]= connectionDetails._id;
+      oneConnectionDisplay["name"] = connectionUser.name;
+      oneConnectionDisplay["age"] = getAge(connectionUser.dob);
+      oneConnectionDisplay["status"] = connectionDetails.status;
+      
+      location = await travelData.getTravelById(connectionDetails.location_id);
+      oneConnectionDisplay["location"] = location.name;
+      connectionsToDisplay.push(oneConnectionDisplay);
+      
+
     }
-  });
+    
+      //console.log(connectionsToDisplay);
+      res.render('users/connections', { users: connectionsToDisplay,
+        user:req.user,
+        helpers: {
+          toage: function (dob) { return getAge(dob); }
+      }},
+    );
+  }
+});
 
 router.get('/checkprofile/:id',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    console.log("id:: " + req.params.id);
-    checkuser = await userData.getUser(req.params.id);
-    locations = await travelData.getAllTravel();
-    connObj=await checkConnection(req.user._id,checkuser._id)
-    res.render('users/checkprofile', {
-      user: req.user, checkuser: checkuser, conn:connObj,
-      helpers: {
-        toage: function (dob) { return getAge(dob); },
-        getlocation: function (id) {
-          for (i = 0; i < locations.length; i++) {
-            console.log("i:: " + i + " locations[i]._id:: " + locations[i]._id);
-            if (locations[i]._id == id)
-              return locations[i].name;
-          }
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  console.log("id:: "+req.params.id);
+  checkuser= await userData.getUser(req.params.id);
+  locations=await travelData.getAllTravel();
+  res.render('users/checkprofile', { user: req.user,checkuser:checkuser,
+    helpers: {
+      toage: function (dob) { return getAge(dob); },
+      getlocation: function (id) { 
+       for(i=0;i<locations.length;i++){
+        console.log("i:: "+i+" locations[i]._id:: "+locations[i]._id);
+         if(locations[i]._id == id)
+            return locations[i].name;
+       }},
+       getbudget: function (id) { 
+        
+             return budgetData.getBudgetById(id);
         },
-        getbudget: function (id) {
-          val = budgetData.getBudgetById(parseInt(id));
-          console.log("budget:: " + val);
-          return val;
-        }
 
-      }
-    });
-  });
-
-  router.post('/checkprofile',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    console.log("Post of checkprofile")
-    connect= await connectionData.addConnection(req.body.user,req.body.checkuser);
-    if(connect != null){
-      console.log("user ::"+req.body.user)
-			res1=await userData.addConnection(req.body.user,connect._id);
-			res2=await userData.addConnection(req.body.checkuser,connect._id);
-		}
-    connObj=await checkConnection(req.user._id,checkuser._id);
-    // res.json = {data: [res, dangerRate]};
-    res.json({ success: true, conn: connObj })
-  });
+        button: function () { 
+            console.log("button clicked");
+              //  return budgetData.getBudgetById(id);
+          }
+  }});
+});
 
 
 function getAge(dateString) {
@@ -245,68 +271,38 @@ function getAge(dateString) {
   var age = today.getFullYear() - birthDate.getFullYear();
   var m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+      age--;
   }
   return age;
 }
 
-
-async function checkConnection(userid,checkuserid){
-
-  connection = await userData.checkConnection(userid,checkuserid);
-  connObj={
-    notConnected:false,
-    connected: false,
-    requestSent:false,
-    requestReceieved:false,
-    rejected:false
-  }
-  if(connection != null){
-      if(connection.status == "accepted")
-        connObj.connected=true;
-      else if(connection.status == "rejected")
-        connObj.rejected=true;
-      else if(connection.status == "pending"){
-        if(connection.requestor_id == userid)
-          connObj.requestSent= true;
-        else
-          connObj.requestReceieved=true;
-      }
-      
-    }
-    else
-      connObj.notConnected=true;
-
-    return connObj;
-
-}
 router.post('/dashboard',
-  function (req, res) {
+function(req,res){
 
-  });
+});
 
 router.post('/login',
-  passport.authenticate('local', { successRedirect: '/dashboard', failureRedirect: '/login', failureFlash: true }),
-  function (req, res) {
-    console.log('You are authenticated');
+passport.authenticate('local', {successRedirect:'/dashboard', failureRedirect:'/login',failureFlash: true}),
+function(req, res) {
+   console.log('You are authenticated');    
     res.redirect('/profile');
-  });
+});
 
-router.get('/logout', function (req, res) {
+router.get('/logout',function(req, res){
   req.logout();
   req.flash('success_msg', 'You are logged out');
   res.redirect('/login');
 });
 // Register
-router.get('/register', async function (req, res) {
-
-  try {
+router.get('/register', async function(req, res){
+  
+  try{
     let locations = await travelData.getAllTravel();
     let budgetranges = budgetData.getAllBudget();
 
-    res.render('users/register', { locations: locations, budgetranges: budgetranges });
+    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
   }
-  catch (e) {
+  catch(e){
     response.status(500).json({ error: e });
   }
 	
@@ -354,7 +350,7 @@ router.post('/register', async function(req, res){
     res.render('users/register', {locations:locations, budgetranges:budgetranges,errors:errors,user:errors_user} );
 
 
-  } else {
+	} else {
     /* userData.getUserbyUserId(req.body.user_id).then(function(user) {
       if(user){
         console.log("user"+user.name);
@@ -375,20 +371,20 @@ router.post('/register', async function(req, res){
       }
     }
     const newUser = {
-      user_id: req.body.user_id,
-      hashedPassword: "",
-      password: req.body.password,
-      name: req.body.name,
-      dob: req.body.dob,
-      gender: req.body.gender,
-      location: req.body.location,
-      occupation: req.body.occupation,
-      orientation: req.body.orientation,
-      contact_info: req.body.contactInformation,
-      email: req.body.email,
-      budget: req.body.budgetPreference,
-      location_pref: _location_pref,
-      connections: []
+      user_id:req.body.user_id,
+      hashedPassword:"",
+      password:req.body.password,
+      name:req.body.name,
+      dob:req.body.dob,
+      gender:req.body.gender,
+      location:req.body.location,
+      occupation:req.body.occupation,
+      orientation:req.body.orientation,
+      contact_info:req.body.contactInformation,
+      email:req.body.email,
+      budget:req.body.budgetPreference,
+      location_pref:_location_pref,
+      connections:[]
     };
     addedUser=await userData.addUser(newUser,newUser.password);
     console.log("added new user");
