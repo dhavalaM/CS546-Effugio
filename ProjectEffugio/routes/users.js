@@ -3,10 +3,10 @@ const router = express.Router();
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 const data = require("../data");
-const userData = data.users;
-const travelData = data.travel;
-const budgetData = data.budget;
-const connectionData=data.connection;
+const userData= data.users;
+const travelData=data.travel;
+const budgetData=data.budget;
+const connectionData = data.connection;
 
 var setCookie = require('set-cookie-parser');
 
@@ -162,23 +162,63 @@ router.post("/profile", async (req, res) => {
 });
 
 router.get('/dashboard',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    suggestedUsers = await userData.getSuggestedUsers(req.user);
-    if (suggestedUsers != null) {
-      //console.log("suggested users:: ");
-      //console.log(suggestedUsers);
-
-      res.render('users/dashboard', {
-        users: suggestedUsers,
-        user: req.user,
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  suggestedUsers= await userData.getSuggestedUsers(req.user);
+  if(suggestedUsers!= null){
+    //console.log("suggested users:: ");
+    //console.log(suggestedUsers);
+      
+      res.render('users/dashboard', { users: suggestedUsers,
+        user:req.user,
         helpers: {
           toage: function (dob) { return getAge(dob); }
-        }
-      },
-      );
+      }},
+    );
+  }
+});
+
+router.get('/connections',
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  connectionsToDisplay=[];    
+  userConnections = await userData.getConnections(req.user._id);
+  if(userConnections!= null){
+    
+    
+    for(i=0;i<userConnections.length;i++){
+      oneConnectionDisplay={};
+      connectionDetails = await connectionData.getConnectionById(userConnections[i]);
+      if(connectionDetails.requestor_id == req.user._id){
+        userConnectionID = connectionDetails.connected_id;
+      }
+      else{
+        userConnectionID = connectionDetails.requestor_id;
+      }
+    
+      connectionUser = await userData.getUser(userConnectionID);
+      oneConnectionDisplay["_id"] = connectionUser._id;
+      oneConnectionDisplay["connection_id"]= connectionDetails._id;
+      oneConnectionDisplay["name"] = connectionUser.name;
+      oneConnectionDisplay["age"] = getAge(connectionUser.dob);
+      oneConnectionDisplay["status"] = connectionDetails.status;
+      
+      location = await travelData.getTravelById(connectionDetails.location_id);
+      oneConnectionDisplay["location"] = location.name;
+      connectionsToDisplay.push(oneConnectionDisplay);
+      
+
     }
-  });
+    
+      //console.log(connectionsToDisplay);
+      res.render('users/connections', { users: connectionsToDisplay,
+        user:req.user,
+        helpers: {
+          toage: function (dob) { return getAge(dob); }
+      }},
+    );
+  }
+});
 
   router.get('/connections',
   require('connect-ensure-login').ensureLoggedIn("/"),
@@ -223,28 +263,24 @@ router.get('/dashboard',
   });
 
 router.get('/checkprofile/:id',
-  require('connect-ensure-login').ensureLoggedIn("/"),
-  async function (req, res) {
-    console.log("id:: " + req.params.id);
-    checkuser = await userData.getUser(req.params.id);
-    locations = await travelData.getAllTravel();
-    connObj=await checkConnection(req.user._id,checkuser._id)
-    res.render('users/checkprofile', {
-      user: req.user, checkuser: checkuser, conn:connObj,
-      helpers: {
-        toage: function (dob) { return getAge(dob); },
-        getlocation: function (id) {
-          for (i = 0; i < locations.length; i++) {
-            console.log("i:: " + i + " locations[i]._id:: " + locations[i]._id);
-            if (locations[i]._id == id)
-              return locations[i].name;
-          }
+require('connect-ensure-login').ensureLoggedIn("/"),
+async function(req, res){
+  console.log("id:: "+req.params.id);
+  checkuser= await userData.getUser(req.params.id);
+  locations=await travelData.getAllTravel();
+  res.render('users/checkprofile', { user: req.user,checkuser:checkuser,
+    helpers: {
+      toage: function (dob) { return getAge(dob); },
+      getlocation: function (id) { 
+       for(i=0;i<locations.length;i++){
+        console.log("i:: "+i+" locations[i]._id:: "+locations[i]._id);
+         if(locations[i]._id == id)
+            return locations[i].name;
+       }},
+       getbudget: function (id) { 
+        
+             return budgetData.getBudgetById(id);
         },
-        getbudget: function (id) {
-          val = budgetData.getBudgetById(parseInt(id));
-          console.log("budget:: " + val);
-          return val;
-        }
 
       }
     });
@@ -274,68 +310,38 @@ function getAge(dateString) {
   var age = today.getFullYear() - birthDate.getFullYear();
   var m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+      age--;
   }
   return age;
 }
 
-
-async function checkConnection(userid,checkuserid){
-
-  connection = await userData.checkConnection(userid,checkuserid);
-  connObj={
-    notConnected:false,
-    connected: false,
-    requestSent:false,
-    requestReceieved:false,
-    rejected:false
-  }
-  if(connection != null){
-      if(connection.status == "accepted")
-        connObj.connected=true;
-      else if(connection.status == "rejected")
-        connObj.rejected=true;
-      else if(connection.status == "pending"){
-        if(connection.requestor_id == userid)
-          connObj.requestSent= true;
-        else
-          connObj.requestReceieved=true;
-      }
-      
-    }
-    else
-      connObj.notConnected=true;
-
-    return connObj;
-
-}
 router.post('/dashboard',
-  function (req, res) {
+function(req,res){
 
-  });
+});
 
 router.post('/login',
-  passport.authenticate('local', { successRedirect: '/dashboard', failureRedirect: '/login', failureFlash: true }),
-  function (req, res) {
-    console.log('You are authenticated');
+passport.authenticate('local', {successRedirect:'/dashboard', failureRedirect:'/login',failureFlash: true}),
+function(req, res) {
+   console.log('You are authenticated');    
     res.redirect('/profile');
-  });
+});
 
-router.get('/logout', function (req, res) {
+router.get('/logout',function(req, res){
   req.logout();
   req.flash('success_msg', 'You are logged out');
   res.redirect('/login');
 });
 // Register
-router.get('/register', async function (req, res) {
-
-  try {
+router.get('/register', async function(req, res){
+  
+  try{
     let locations = await travelData.getAllTravel();
     let budgetranges = budgetData.getAllBudget();
 
-    res.render('users/register', { locations: locations, budgetranges: budgetranges });
+    res.render('users/register', {locations:locations, budgetranges:budgetranges} );
   }
-  catch (e) {
+  catch(e){
     response.status(500).json({ error: e });
   }
 	
