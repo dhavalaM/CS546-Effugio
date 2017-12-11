@@ -73,7 +73,8 @@ let exportedMethods = {
     //Get connections of a user
     async  getConnections(_id) {
         if (!_id) throw "You must provide an id to search for a recipe";
-
+        console.log("Inside data module getConnections");
+        console.log("User Id passed in: " + _id);
         user = await this.getUser(_id);
 
         return user.connections;
@@ -164,7 +165,8 @@ let exportedMethods = {
             email: oldUser.email,
             budget: oldUser.budget,
             location_pref: oldUser.location_pref,
-            hashedPassword: oldUser.hashedPassword
+            hashedPassword: oldUser.hashedPassword,
+            connections: oldUser.connections
 
         };
 
