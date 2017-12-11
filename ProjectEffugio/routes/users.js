@@ -53,22 +53,16 @@ router.get('/profile',
     let errors = [];
     let alllocationprefs = [];
     let budgetranges = [];
-    //let userLocPrefList = [];
-    //let userBudgetList = [];
 
     try {
-      budgetranges = await budgetData.getAllBudget();
+      budgetranges = budgetData.getAllBudget();
       alllocationprefs = await travelData.getAllTravel();
-      //userLocPrefList = await userData.getLocPrefList(req.user._id);
-      //userBudgetList = await userData.getBudgetObj(req.user._id);
 
       res.render('users/profile', {
         errors: errors,
         hasErrors: false,
         updSuccess: false,
         user: req.user,
-        //userLocPrefs:userLocPrefList,
-        //userBudget:userBudgetList,
         locations: alllocationprefs,
         budgetranges: budgetranges
       });
@@ -80,8 +74,6 @@ router.get('/profile',
         hasErrors: true,
         updSuccess: false,
         user: req.user,
-        //userLocPrefs:userLocPrefList,
-        //userBudget:userBudgetList,
         locations: alllocationprefs,
         budgetranges: budgetranges
       });
@@ -95,18 +87,17 @@ router.post("/profile", async (req, res) => {
   let errors = [];
   let alllocationprefs = [];
   let budgetranges = [];
-  //let userLocPrefList = [];
-  //let userBudgetList = [];
 
-  budgetranges = await budgetData.getAllBudget();
+  if ((updatedProfileData.newPwd) || (updatedProfileData.newPwdConfirm)){
+    if (updatedProfileData.newPwd !== updatedProfileData.newPwdConfirm){
+    //console.log("Coming into if");
+    errors.push("New Password and Confirm New Password don't match");
+    }
+  } 
+
+
+  budgetranges = budgetData.getAllBudget();
   alllocationprefs = await travelData.getAllTravel();
-  //userLocPrefList = await userData.getLocPrefList(updatedProfileData._id);
-  //userBudgetList = await userData.getBudgetObj(updatedProfileData._id);
-
-  //Converting the age from string (default datatype from HTML forms) to number for storing in database as integer
-  //if (updatedProfileData.age) {
-  //  updatedProfileData.age = Number(updatedProfileData.age);
-  //}
 
   /*
   if (!blogPostData.body) {
@@ -121,8 +112,6 @@ router.post("/profile", async (req, res) => {
       hasErrors: true,
       updSuccess: false,
       user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
       locations: alllocationprefs,
       budgetranges: budgetranges
     });
@@ -146,14 +135,12 @@ router.post("/profile", async (req, res) => {
       updatedProfileData.location_pref = locationPrefList;
     }
 
-    let updatedUserProfile = await userData.updateUser(updatedProfileData, updatedProfileData.hashedPassword);
+    let updatedUserProfile = await userData.updateUser(updatedProfileData);
     res.render('users/profile', {
       errors: errors,
       hasErrors: false,
       updSuccess: true,
       user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
       locations: alllocationprefs,
       budgetranges: budgetranges
     });
@@ -168,8 +155,6 @@ router.post("/profile", async (req, res) => {
       hasErrors: true,
       updSuccess: false,
       user: updatedProfileData,
-      //userLocPrefs:userLocPrefList,
-      //userBudget:userBudgetList,
       locations: alllocationprefs,
       budgetranges: budgetranges
     });
@@ -191,6 +176,48 @@ router.get('/dashboard',
           toage: function (dob) { return getAge(dob); }
         }
       },
+      );
+    }
+  });
+
+  router.get('/connections',
+  require('connect-ensure-login').ensureLoggedIn("/"),
+  async function(req, res){
+    connectionsToDisplay=[];    
+    userConnections = await userData.getConnections(req.user._id);
+    if(userConnections!= null){
+      
+      
+      for(i=0;i<userConnections.length;i++){
+        oneConnectionDisplay={};
+        connectionDetails = await connectionData.getConnectionById(userConnections[i]);
+        if(connectionDetails.requestor_id == req.user._id){
+          userConnectionID = connectionDetails.connected_id;
+        }
+        else{
+          userConnectionID = connectionDetails.requestor_id;
+        }
+      
+        connectionUser = await userData.getUser(userConnectionID);
+        oneConnectionDisplay["_id"] = connectionUser._id;
+        oneConnectionDisplay["connection_id"]= connectionDetails._id;
+        oneConnectionDisplay["name"] = connectionUser.name;
+        oneConnectionDisplay["age"] = getAge(connectionUser.dob);
+        oneConnectionDisplay["status"] = connectionDetails.status;
+        
+        //location = await travelData.getTravelById(connectionDetails.location_id);
+        //oneConnectionDisplay["location"] = location.name;
+        connectionsToDisplay.push(oneConnectionDisplay);
+        
+  
+      }
+      
+        //console.log(connectionsToDisplay);
+        res.render('users/connections', { users: connectionsToDisplay,
+          user:req.user,
+          helpers: {
+            toage: function (dob) { return getAge(dob); }
+        }},
       );
     }
   });
@@ -226,7 +253,7 @@ router.get('/checkprofile/:id',
   router.post('/checkprofile',
   require('connect-ensure-login').ensureLoggedIn("/"),
   async function (req, res) {
-    console.log("Post of checkprofile")
+    console.log("Post of checkprofile");
     connect= await connectionData.addConnection(req.body.user,req.body.checkuser);
     if(connect != null){
       console.log("user ::"+req.body.user)
@@ -235,7 +262,9 @@ router.get('/checkprofile/:id',
 		}
     connObj=await checkConnection(req.user._id,checkuser._id);
     // res.json = {data: [res, dangerRate]};
-    res.json({ success: true, conn: connObj })
+    //res.json({ success: true, conn: connObj })
+    res.render("partials/connect_item", { layout: null, conn: connObj });
+
   });
 
 
@@ -355,6 +384,10 @@ router.post('/register', async function(req, res){
 
 
   } else {
+    //NM - initiating new variable 'conns' and using this to set empty connections list for newUser. Otherwise connections
+    //property does not get set for new users. This causes rejected promise errors later on in addConnection method of users data module where
+    //push is called on user's connection property.
+    var conns = [];
     /* userData.getUserbyUserId(req.body.user_id).then(function(user) {
       if(user){
         console.log("user"+user.name);
@@ -388,7 +421,7 @@ router.post('/register', async function(req, res){
       email: req.body.email,
       budget: req.body.budgetPreference,
       location_pref: _location_pref,
-      connections: []
+      connections: conns
     };
     addedUser=await userData.addUser(newUser,newUser.password);
     console.log("added new user");
