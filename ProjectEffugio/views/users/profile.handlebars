@@ -63,7 +63,7 @@
   <input type="hidden" id="orientation2" name="orientation" value="{{user.orientation}}">
   <div class="form-group">
     <label for="contact_info">Contact Information</label>
-    <input type="text" class="form-control" placeholder="Phone: 9999999999" name="contact_info" id="contact_info" pattern="[1-9]{3}[0-9]{3}[0-9]{4}" value="{{user.contact_info}}">
+    <input type="text" class="form-control" placeholder="Phone: 9999999999" name="contact_info" id="contact_info" pattern="[1-9]{3}[0-9]{3}[0-9]{4}" minlength="10" maxlength="10" value="{{user.contact_info}}">
   </div>
   <div class="form-group">
     <label for="locationpref">Location Preferences</label>
@@ -98,16 +98,14 @@
     <label for="email">Email</label>
     <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{user.email}}">
   </div>
-  {{!--Commenting password fields
   <div class="form-group">
-    <label>Password</label>
-    <input type="password" class="form-control" placeholder="Password" name="password">
+    <label for="newpassword">New Password</label>
+    <input type="password" class="form-control" placeholder="Password" name="newPwd" id="newpassword" value="{{user.newPwd}}">
   </div>
   <div class="form-group">
-    <label>New Password</label>
-    <input type="password" class="form-control" placeholder="Password" name="password2">
+    <label for="newpasswordconfirm">Confirm New Password</label>
+    <input type="password" class="form-control" placeholder="Password" name="newPwdConfirm" id="newpasswordconfirm" value="{{user.newPwdConfirm}}">
   </div>
-  --}}
   <button type="submit" class="btn btn-default">Update Profile</button>
   <button type="reset" class="btn btn-default" value="Reset">Reset</button>
   <input type="hidden" id="userId" name="_id" value="{{user._id}}">
