@@ -22,18 +22,23 @@
                             <li>{{{ getlocation this}}}</li>
                                 {{/each}}
                             </ul>
-                    {{#if conn.notConnected}}
+
+                            {{> connect_item }}
+                    <!--Commenting <div class="desc" id="connectrequeststatus">
+                        {{#if conn.notConnected}}
                             <a class="finishItem" data-id="{{checkuser._id}}" data-user="{{user._id}}">Connect</a> 
-                    {{/if}}
-                    {{#if conn.connected }}
+                        {{/if}}
+                        {{#if conn.connected }}
                             <em>You are connected</em>
-                     {{/if}}
-                     {{#if conn.requestSent }}
+                        {{/if}}
+                        {{#if conn.requestSent }}
                             <em>Request sent</em>
-                     {{/if}}
-                     {{#if conn.requestReceieved }}
+                        {{/if}}
+                        {{#if conn.requestReceieved }}
                             <em>Your response is pending</em>
-                     {{/if}}
+                        {{/if}}
+                     </div>
+                     -->
                 </div>
                
             </div>
