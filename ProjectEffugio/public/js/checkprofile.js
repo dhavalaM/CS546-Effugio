@@ -3,7 +3,8 @@
     console.log("Ajax");
     
     profilearea = $("#profilearea");
-    profilearea.children().each(function(index, element) {
+    //profilearea.children().each(function(index, element) {
+    profilearea.find("#connectrequeststatus").each(function(index, element){
         bindEventsToCheckProfile($(element));
       });
     
@@ -28,6 +29,7 @@
       };
 
       $.ajax(requestConfig).then(function(responseMessage) {
+        console.log("Response from Ajax: ");
         console.log(responseMessage);
         var newElement = $(responseMessage);
         bindEventsToCheckProfile(newElement);
