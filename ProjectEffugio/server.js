@@ -53,7 +53,10 @@ const handlebarsInstance = exphbs.create({
     
         return html;
         }
-    }
+    },
+    partialsDir: [
+        'views/partials/'
+    ]
 });
 app.engine('handlebars', handlebarsInstance.engine);
 app.set('view engine', 'handlebars');
