@@ -85,7 +85,6 @@ let exportedMethods = {
 
         const userCollection = await usersList();
 
-
         const newUser = {
             _id: uuidv1(),
             user_id: user.user_id,
@@ -169,7 +168,7 @@ let exportedMethods = {
 
         };
 
-        if (user.user_id) {
+       /* if (user.user_id) {
             //console.log("Inside duplicate username check in updateUser");
             let usernameExists = await this.getUserbyUserId(user.user_id);
             //console.log(usernameExists);
@@ -180,7 +179,7 @@ let exportedMethods = {
             else {
                 updatedUser.user_id = user.user_id;
             }
-        }
+        }*/
 
         //TODO: check here or in html??
         if (user.name != null) {
@@ -218,6 +217,14 @@ let exportedMethods = {
         }
         if (user.location_pref != null) {
             updatedUser.location_pref = user.location_pref;
+        }
+        //NM - Added update password functionality on My Profile page
+        //console.log("User newPwd Length");
+        //console.log(user.newPwd.length);
+        if ((user.newPwd !== null) && (user.newPwd.length>0)){
+            //console.log("Inside data module updateUser method's Password Update check");
+            const hash = await bcrypt.hashAsync(user.newPwd, 16.5);
+            updatedUser.hashedPassword = hash;
         }
 
         /*
