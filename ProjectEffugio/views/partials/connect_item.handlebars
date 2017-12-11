@@ -1,0 +1,14 @@
+<div class="desc" id="connectrequeststatus">
+    {{#if conn.notConnected}}
+        <a class="finishItem" data-id="{{checkuser._id}}" data-user="{{user._id}}">Connect</a> 
+    {{/if}}
+    {{#if conn.connected }}
+        <em>You are connected</em>
+    {{/if}}
+    {{#if conn.requestSent }}
+        <em>Request Sent</em>
+    {{/if}}
+    {{#if conn.requestReceieved }}
+        <em>Request Received</em>
+    {{/if}}
+</div>
