@@ -304,6 +304,7 @@ let exportedMethods = {
                     { gender: { $ne: user.gender } },
                     { orientation: user.orientation },
                     { connections: { $nin: connectionsIds } },
+                    { location_pref: { $in: user.location_pref } },
 
                 ]
             }).toArray();
@@ -317,6 +318,7 @@ let exportedMethods = {
                     { gender: user.gender },
                     { orientation: user.orientation },
                     { connections: { $nin: connectionsIds } },
+                    { location_pref: { $in: user.location_pref } }
 
                 ]
             }).toArray();
