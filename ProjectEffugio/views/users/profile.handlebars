@@ -33,7 +33,7 @@
     <label for="age">Age</label>
     <input type="text" class="form-control" placeholder="Age" name="age" id="age" pattern="[1-9][0-9]" minlength="2" maxlength="2" value={{user.age}}>
   </div>
-  -->
+  
   <div class="form-group">
         <label for="location">Location</label>
         <select class="form-control" name="location" id="location">
@@ -45,10 +45,17 @@
           <option value="Mount Rushmore">Mount Rushmore</option>
           {{/select}}
         </select>
+  </div>-->
+  <div class="form-group">
+    <label for="location">Location</label>
+    <input type="text" class="form-control" placeholder="Location" name="location" id="location" minlength="2" maxlength="80" value="{{user.location}}">
   </div>
   <div class="form-group">
     <label for="occupation">Occupation</label>
+    <!--
     <input type="text" class="form-control" placeholder="Occupation" name="occupation" id="occupation" pattern="[a-zA-Z]+[' -,]{0,1}[a-zA-Z]+" minlength="2" maxlength="80" value="{{user.occupation}}">
+    -->
+    <input type="text" class="form-control" placeholder="Occupation" name="occupation" id="occupation" minlength="2" maxlength="80" value="{{user.occupation}}">
   </div>
   <div class="form-group">
         <label for="orientation">Orientation</label>
