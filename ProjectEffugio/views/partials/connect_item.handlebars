@@ -6,9 +6,14 @@
         <em>You are connected</em>
     {{/if}}
     {{#if conn.requestSent }}
-        <em>Request Sent</em>
+        <em>Connection Request Sent</em>
     {{/if}}
     {{#if conn.requestReceieved }}
-        <em>Request Received</em>
+        <em>Connection Request Received</em><br />
+        <a class="acceptItem" data-id="{{checkuser._id}}" data-user="{{user._id}}">Accept Connection</a><br />
+        <a class="rejectItem" data-id="{{checkuser._id}}" data-user="{{user._id}}">Reject Connection</a>  
+    {{/if}}
+        {{#if conn.rejected }}
+        <em>Connection Request Rejected</em>
     {{/if}}
 </div>
