@@ -34,7 +34,31 @@ let exportedMethods={
 	    if (listOfConnections.length ===0) return null;
 	    return listOfConnections;
 
-    },
+	},
+	
+	async getConnectionByUserIds(requestoruserid1, receiveruserid2){
+		if((!requestoruserid1)||(!receiveruserid2)){
+			throw "Provide both the user ids to get the connection between two users";
+			return null;
+		}
+		const connectionCollection = await connectionList();
+		const conn = await connectionCollection.findOne({
+			$and: [
+				// {location_pref:{ $in: user.location_pref }},
+				{ requestor_id: requestoruserid1 },
+				{ connected_id: receiveruserid2 }
+			]
+		});
+		if(conn){
+			return conn;
+		}
+		else {
+			throw "No connection found for these two users";
+			return null;
+		}
+
+	},
+
     async getAllConnections(){
         const connectionCollection = await connectionList();
 	    const listOfConnections = await connectionCollection.find().toArray();
@@ -77,7 +101,31 @@ let exportedMethods={
 		conn= await this.getConnectionById(newId);
 		
 		return conn;
-    },
+	},
+	
+	async updateConnStatus(connId, statusVal){
+		//console.log("Inside updateConnStatus in data module");
+		//console.log("Status value passed to the method: "+statusVal);
+		const validStatus = ['accepted', 'rejected','pending'];
+
+		if(!connId){
+			throw 'You must provide a connection id to update connection status';
+			return null;
+		}
+
+		if(!validStatus.includes(statusVal)){
+			throw 'You must provide a valid status to update the connection status';
+			return null;
+		}
+
+        const connectionCollection = await connectionList();
+		const updateConn = await connectionCollection.updateOne({ _id: connId }, {$set: {"status":statusVal}});
+		if (updateConn.modifiedCount === 0) {
+			throw "Could not update the connection status successfully";
+			return null;
+		  }
+		  return await this.getConnectionById(connId);
+	},
 
     async removeConnection(_id){
 	    if(!_id) throw 'provide an id to delete';
