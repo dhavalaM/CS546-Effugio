@@ -17,7 +17,11 @@
                     <div class="desc" id="Occupation">Occupation: {{checkuser.occupation}}</div>
                     <div class="desc" id="dob">{{{toage checkuser.dob }}} years</div>
                     <div class="desc" id="budget range">Budget range: {{{getbudget checkuser.budget }}} $</div>
-                    <ul  style="list-style: none" class="desc"> Select the location to connect:
+                    {{#if conn.connected }}
+                        <div class="desc" id="contactnum">Contact Information: {{checkuser.contact_info}}</div>
+                        <div class="desc" id="emailaddr">Email: {{checkuser.email}}</div>
+                    {{/if}}
+                    <ul  style="list-style: none" class="desc"> Travel Location Preferences:
                             {{#each checkuser.location_pref}}
                             <li>{{{ getlocation this}}}</li>
                                 {{/each}}
