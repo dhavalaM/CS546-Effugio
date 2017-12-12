@@ -113,15 +113,19 @@ async function runSetup() {
     userlily = makeDoc("lilly", "Lilly Evans", "", "11/27/1989", "F", "Jerseycity", "Student", "L",
     "5516786000","lilly_evans123@gmail.com", [travelData[1]._id, travelData[2]._id], "1", []);
 
+    usermartina = makeDoc("martina", "Martina Navratilova", "", "11/27/1989", "F", "Jersey City", "Sportswoman", "L",
+    "55167861111","martina_nav123@gmail.com", [travelData[1]._id], "5", []);
+    usermartina.hashedPassword = "$2a$16$KJmxifBk6RayA7SmsXyhcuKqQNv.uaxwy/krRtuUODQ6VhqhV1biC";
+    //password: password5
 
     usermary = makeDoc("mary", "Mary Morgan", "", "11/27/1990", "F", "New York", "Bartender", "S", "2416788900",
         "mary657@gmail.com", [travelData[3]._id, travelData[1]._id], "2", []);
 
 
-
-    useranna = makeDoc("anna", "James Dean", "", "11/27/1989", "M", "Newark", "Pet shop owner", "S",
+    userjamesdean = makeDoc("jamesd", "James Dean", "", "11/27/1989", "M", "Newark", "Pet shop owner", "S",
     "2216788900","james_dean@gmail.com", [travelData[4]._id, travelData[1]._id], "3", []);
-
+    userjamesdean.hashedPassword = "$2a$16$QIKZ.4E5fQ/SMViy2R4YpOtdd1OG.oWboEa8eYGwdkS1coFUJ/GRS";
+    //password: password3
 
     userjessi = makeDoc("jessi", "Jessica Charles", "", "11/27/1989", "F", "Beverly hills", "Chef", "S", "5516787777",
         "jessica.baker@gmail.com", [travelData[0]._id, travelData[2]._id], "1", []);
@@ -129,36 +133,56 @@ async function runSetup() {
 
     userthomas = makeDoc("thomas", "Tom Marvolo", "", "11/27/1989", "M", "Cliffton", "Software Engineer", "G", "5511118900",
         "tom.riddle@gmail.com", [travelData[2]._id, travelData[1]._id], "1", []);
+    userthomas.hashedPassword = "$2a$16$Gyci2gGIPlr3lsAAuel.hOEK97aLjCqFaYE56RDURWdspHRiEUdTO";
+    //password: password4
 
 
-    userdane = makeDoc("dani", "Daniel Cliff", "", "11/27/1989", "F", "Chicago", "Dancer", "L", "5512228900",
+    userdane = makeDoc("dani", "Daniel Cliff", "", "11/27/1989", "M", "Chicago", "Dancer", "G", "5512228900",
         "daniel.cliff@gmail.com", [travelData[3]._id, travelData[1]._id], "2", []);
 
+    
+    userkate = makeDoc("kate", "Kate Winslet", "", "11/27/1998", "F", "New York", "Programmer", "S", "5512221111",
+        "kate.winslet@gmail.com", [travelData[2]._id, travelData[3]._id, travelData[4]._id], "4", []);
+
+    userleo = makeDoc("leo", "Leo Nardo Di Caprio", "", "11/27/1981", "M", "Cliffton", "Software Engineer", "S", "5511118900",
+    "leo.caprio@gmail.com", [travelData[2]._id, travelData[1]._id], "1", []);
 
     // adding connections data seed
     //NM - Commenting the below collection drop line as starting the application gives 'MongoError: ns not found' error
     //await db.collection(connections).drop();
     connectionsColl = await db.createCollection(connections);
-    coonection1=makeConDoc(userJack._id,userRose._id,"pending",travelData[1]._id,"11/27/2017");
+    coonection1=makeConDoc(userJack._id,userRose._id,"pending","","11/27/2017");
+    connection2=makeConDoc(userRose._id,userjamesdean._id,"rejected","","11/27/2017");
+    //connection3=makeConDoc(userkate._id,userJack._id,"pending","","12/27/2017");
+
     await connectionsColl.insert(coonection1);
+    await connectionsColl.insert(connection2);
+    //await connectionsColl.insert(connection3);
     console.log("\n\Connections Data inserted");
     connins = await connectionsColl.find().toArray();
     console.log(connins);
     //end add connections
 
     userJack.connections.push(coonection1._id);
+    //userJack.connections.push(connection3._id);
     userRose.connections.push(coonection1._id);
+    userRose.connections.push(connection2._id);
+    userjamesdean.connections.push(connection2._id);
+    //userkate.connections.push(connection3._id);
+    
 
     usersList = [];
     usersList.push(userJack);
     usersList.push(userRose);
     usersList.push(userlily);
     usersList.push(usermary);
-    usersList.push(useranna);
+    usersList.push(usermartina);
+    usersList.push(userjamesdean);
     usersList.push(userjessi);
     usersList.push(userthomas);
     usersList.push(userdane);
-
+    usersList.push(userkate);
+    usersList.push(userleo);
 
     res = await userCollection.insertMany(usersList);
     usersins = await userCollection.find().toArray();
