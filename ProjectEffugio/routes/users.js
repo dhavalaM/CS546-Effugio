@@ -183,13 +183,13 @@ router.get('/dashboard',
   router.get('/connections',
   require('connect-ensure-login').ensureLoggedIn("/"),
   async function(req, res){
-    console.log("Inside Connections GET Route");
+    //console.log("Inside Connections GET Route");
     connectionsToDisplay=[];    
     userConnections = await userData.getConnections(req.user._id);
-    console.log(userConnections);
+    //console.log(userConnections);
     if(userConnections!= null){
       
-      console.log("Inside if condition passed userConnections!=null check");
+      //console.log("Inside if condition passed userConnections!=null check");
       for(i=0;i<userConnections.length;i++){
         oneConnectionDisplay={};
         connectionDetails = await connectionData.getConnectionById(userConnections[i]);
@@ -256,16 +256,40 @@ router.get('/checkprofile/:id',
   require('connect-ensure-login').ensureLoggedIn("/"),
   async function (req, res) {
     console.log("Post of checkprofile");
-    connect= await connectionData.addConnection(req.body.user,req.body.checkuser);
-    if(connect != null){
-      console.log("user ::"+req.body.user)
-			res1=await userData.addConnection(req.body.user,connect._id);
-			res2=await userData.addConnection(req.body.checkuser,connect._id);
-		}
-    connObj=await checkConnection(req.user._id,checkuser._id);
-    // res.json = {data: [res, dangerRate]};
-    //res.json({ success: true, conn: connObj })
-    res.render("partials/connect_item", { layout: null, conn: connObj });
+    if(req.body.sendConnReq){
+      //console.log("Inside if condition of sendConnReq");
+      connect= await connectionData.addConnection(req.body.user,req.body.checkuser);
+      if(connect != null){
+        console.log("user ::"+req.body.user)
+			  res1=await userData.addConnection(req.body.user,connect._id);
+			  res2=await userData.addConnection(req.body.checkuser,connect._id);
+		  }
+      connObj=await checkConnection(req.user._id,checkuser._id);
+      // res.json = {data: [res, dangerRate]};
+      //res.json({ success: true, conn: connObj })
+      res.render("partials/connect_item", { layout: null, conn: connObj });
+    }
+    else if(req.body.sendAcceptReq){
+      //console.log("Inside if condition of sendAcceptReq");
+      var statusVal = "accepted";
+      acceptReq = await connectionData.getConnectionByUserIds(req.body.checkuser,req.body.user);
+      if(acceptReq!= null){
+        updConnReq = await connectionData.updateConnStatus(acceptReq._id, statusVal);
+      }
+        connObj=await checkConnection(req.body.checkuser,req.body.user);
+        res.render("partials/connect_item", { layout: null, conn: connObj });
+    }
+    else{
+      //console.log("Inside else i.e. sendRejectReq is true");
+      var statusVal = "rejected";
+      rejectReq = await connectionData.getConnectionByUserIds(req.body.checkuser,req.body.user);
+      if(rejectReq!= null){
+        updConnReq = await connectionData.updateConnStatus(rejectReq._id, statusVal);
+      }
+        connObj=await checkConnection(req.body.checkuser,req.body.user);
+        res.render("partials/connect_item", { layout: null, conn: connObj });
+
+    }
 
   });
 
