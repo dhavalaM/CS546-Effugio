@@ -7,7 +7,14 @@ const userData = data.users;
 const travelData = data.travel;
 const budgetData = data.budget;
 const connectionData=data.connection;
-
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+var cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: 'effugio',
+  api_key: '266718785839255',
+  api_secret: 'YoIwSpXNsaiRXNNB1EDp_gGmhOs'
+});
 var setCookie = require('set-cookie-parser');
 
 passport.use(new Strategy(
@@ -64,7 +71,8 @@ router.get('/profile',
         updSuccess: false,
         user: req.user,
         locations: alllocationprefs,
-        budgetranges: budgetranges
+        budgetranges: budgetranges,
+        profilePicID:req.user._id
       });
     }
     catch (e) {
@@ -75,14 +83,15 @@ router.get('/profile',
         updSuccess: false,
         user: req.user,
         locations: alllocationprefs,
-        budgetranges: budgetranges
+        budgetranges: budgetranges,
+        profilePicID:req.user._id
       });
     }
   });
 
 //NM - added a post method for My Profile page to send user profile updates to the database
-router.post("/profile", async (req, res) => {
-  let updatedProfileData = req.body;
+router.post("/profile", multipartMiddleware,async (req, res) => {
+    let updatedProfileData = req.body;
   console.log("body: %j", req.body);
   let errors = [];
   let alllocationprefs = [];
@@ -113,7 +122,8 @@ router.post("/profile", async (req, res) => {
       updSuccess: false,
       user: updatedProfileData,
       locations: alllocationprefs,
-      budgetranges: budgetranges
+      budgetranges: budgetranges,
+      profilePicID:req.user._id
     });
     return;
   }
@@ -142,7 +152,8 @@ router.post("/profile", async (req, res) => {
       updSuccess: true,
       user: updatedProfileData,
       locations: alllocationprefs,
-      budgetranges: budgetranges
+      budgetranges: budgetranges,
+      profilePicID:req.user._id
     });
     return;
   }
@@ -156,7 +167,8 @@ router.post("/profile", async (req, res) => {
       updSuccess: false,
       user: updatedProfileData,
       locations: alllocationprefs,
-      budgetranges: budgetranges
+      budgetranges: budgetranges,
+      profilePicID:req.user._id
     });
   }
 });
@@ -232,7 +244,7 @@ router.get('/checkprofile/:id',
     locations = await travelData.getAllTravel();
     connObj=await checkConnection(req.user._id,checkuser._id)
     res.render('users/checkprofile', {
-      user: req.user, checkuser: checkuser, conn:connObj,
+      user: req.user, checkuser: checkuser, conn:connObj,profilePicID:checkuser._id,
       helpers: {
         toage: function (dob) { return getAge(dob); },
         getlocation: function (id) {
@@ -414,7 +426,7 @@ router.get('/register', async function (req, res) {
 	
 });
 // Register User
-router.post('/register', async function(req, res){
+router.post('/register', multipartMiddleware, async function(req, res){
 
 	// Validation
     req.checkBody('name', 'Name is required').notEmpty();
@@ -422,7 +434,7 @@ router.post('/register', async function(req, res){
   	req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('email', 'Email is not valid').isEmail();
     req.checkBody('dob', 'Date of birth is required and should be a date').notEmpty();
-    //req.checkBody('location', 'Location is required').notEmpty();
+    req.checkBody('location', 'Location is required').notEmpty();
     req.checkBody('occupation', 'Occupation is required').notEmpty();
     req.checkBody('orientation', 'Orientation is required').notEmpty().not().equals('Select Orientation');;
     req.checkBody('contactInformation', 'Contact Information is required').notEmpty();
@@ -432,7 +444,41 @@ router.post('/register', async function(req, res){
     req.checkBody('budgetPreference', 'Budget Preference must be specified').notEmpty();
     req.checkBody('locationpref', 'Atleast one Location preference is required').notEmpty();
   var errors = req.validationErrors();
+  //console.log(errors.length);
+ // console.log(typeof(errors));
   
+  //console.log("Filename :"+req.body.uploadPicture);
+  var imageFile = req.files.uploadPicture.path;
+  var imageFileName = req.files.uploadPicture.name;
+ 
+if(!imageFileName) {
+  let error_msg={"msg" :"Please select a profile picture for upload",
+                 "param":"uploadPicture" };
+    if(!errors){
+      errors=[];
+      errors.push(error_msg);
+      //console.log(typeof(errors));
+    }else{
+      errors.push(error_msg);
+    }
+    console.log("no file selected!!");
+  }
+  if(req.body.user_id){
+    user=await userData.getUserbyUserId(req.body.user_id);
+    if(user){
+        console.log("Username "+user.name+" already exists");
+        //let errorMessage="Username already exists";
+        let error_msg={"msg" :"Username already exists",
+        "param":"user_id" };
+        if(!errors){
+          errors=[];
+          errors.push(error_msg);
+          //console.log(typeof(errors));
+        }else{
+          errors.push(error_msg);
+        }
+    }
+}
 	if(errors){
 
     var errors_user={
@@ -499,7 +545,15 @@ router.post('/register', async function(req, res){
     addedUser=await userData.addUser(newUser,newUser.password);
     console.log("added new user");
     console.log(addedUser);
-
+    if(imageFileName){
+      //let result=await cloudinary.api.resource(imageFile); 
+      console.log("imageFile :"+imageFile);
+      var addedUserid=addedUser._id;
+      var result =await cloudinary.uploader.upload(imageFile,{public_id:addedUserid});
+      //console.log("Result :"+result); 
+      console.log("Result :"+result.url); 
+    
+    } 
     req.flash('success_msg', 'You are registered and can now login');
     res.redirect('/users/login');  
     

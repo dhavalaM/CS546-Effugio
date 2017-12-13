@@ -14,8 +14,10 @@
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.18.2",
+    "cloudinary": "^1.9.1",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
+    "connect-multiparty": "^2.1.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
@@ -23,11 +25,11 @@
     "express-validator": "^4.3.0",
     "mongodb": "^2.1.18",
     "morgan": "^1.9.0",
+    "node-datetime": "2.0.3",
     "node-uuid": "^1.4.7",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "set-cookie-parser": "^2.0.0",
-    "uuid": "^3.1.0",
-    "node-datetime": "2.0.3"
+    "uuid": "^3.1.0"
   }
 }
