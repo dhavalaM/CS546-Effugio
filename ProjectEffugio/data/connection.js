@@ -132,8 +132,9 @@ let exportedMethods={
         const connectionCollection = await connectionList();
 	    const deletionInfo = await connectionCollection.removeOne({ _id: _id});
 	    if (deletionInfo.deletedCount ===0){
-	        throw `Could not delete connection with id of ${_id}`;
-	    }
+	        return null;
+		}
+		return deletionInfo.deletedCount;
     }
 
 

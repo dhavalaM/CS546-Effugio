@@ -252,6 +252,53 @@ router.get('/checkprofile/:id',
     });
   });
 
+  router.get('/delete/:id',
+  require('connect-ensure-login').ensureLoggedIn("/"),
+  async function (req, res) {
+    console.log("id:: " + req.params.id);
+    connection = await userData.getConnections(req.params.id);
+    console.log("connections ::"+ connection)
+
+    requestorConnections=await connectionData.getConnectionByRequestorId(req.params.id);
+    if(requestorConnections != null){
+      for  (var i = 0; i < requestorConnections.length; i++) {
+        deleteConn= await userData.removeConnection(requestorConnections[i].connected_id,requestorConnections[i]._id);
+        // if(deleteConn != null){
+        //   console.log("deletd where req: "+deleteConn);
+        // }
+  
+    }
+  }
+  
+    receivedConnections=await connectionData.getConnectionByConnectedId(req.params.id);
+    if(receivedConnections != null){
+      for  (var i = 0; i < receivedConnections.length; i++) {
+        deleteConn1= await userData.removeConnection(receivedConnections[i].connected_id,receivedConnections[i]._id);
+        // if(deleteConn1 != null){
+        //   console.log("deletd where req: "+deleteConn1);
+        // }
+  
+    }
+  }
+    
+    for  (var i = 0; i < connection.length; i++) {
+      deleteConn2= await connectionData.removeConnection(connection[i]);
+      // if(deleteConn2 != null){
+      //   console.log("deletd: "+deleteConn2);
+      // }
+  }
+  removeUser = await userData.removeUser(req.params.id);
+    // if(removeUser  != null){
+    //   console.log("Removed count:: "+removeUser)
+    // }
+    name=req.user.name
+    req.logout();
+    res.render('users/deleted', {
+      name: name, 
+      
+    });
+  });
+
   router.post('/checkprofile',
   require('connect-ensure-login').ensureLoggedIn("/"),
   async function (req, res) {

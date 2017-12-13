@@ -249,23 +249,23 @@ let exportedMethods = {
         const userCollection = await usersList();
         const deletionInfo = await userCollection.removeOne({ _id: id });
         if (deletionInfo.deletedCount === 0) {
-            throw `Could not delete user with id of ${id}`;
+            return null;
         }
+        return deletionInfo.deletedCount;
     },
 
     //remove connection
     async removeConnection(id, connectionToRemove) {
         changeUser = await this.getUser(id);
-        connections = [];
-        oneComement = {};
-
+        conn = [];
+        
         for (var val of changeUser.connections) {
             if (connectionToRemove != val) {
-                connections.push(val);
+                conn.push(val);
             }
         };
 
-        changeUser.connections = connections;
+        changeUser.connections = conn;
         const userCollection = await usersList();
         output = await userCollection.updateOne({ _id: changeUser._id }, changeUser);
         if (output.updatedCount === 0) {
