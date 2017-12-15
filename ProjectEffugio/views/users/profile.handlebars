@@ -1,9 +1,13 @@
 <div class="container">
     <h2 class="well">My Profile</h2>
-    {{#if errors}} 
-    {{#each errors}}
-    <div class="alert alert-danger">{{msg}}</div>
-    {{/each}} {{/if}}
+    {{#if hasErrors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{this}}</div>
+      {{/each}}
+    {{/if}}
+    {{#if updSuccess}}
+      <div class="alert alert-success">"Profile updated successfully"</div>
+    {{/if}}
     <div class="col-lg-12 well">
         <div class="row">
             <form method="post" action="/users/profile" id="myProfileForm" enctype="multipart/form-data">
@@ -55,7 +59,7 @@
 
                         <div class="col-sm-4 form-group">
                             <label for="location">Location</label>
-                            <input type="text" class="form-control" placeholder="Location" name="location" value={{ user.location }}>
+                            <input type="text" class="form-control" placeholder="Location" name="location" value="{{ user.location }}">
                         
                         </div>
                         <div class="col-sm-4 form-group">
