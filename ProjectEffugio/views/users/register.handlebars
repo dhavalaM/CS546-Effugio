@@ -21,7 +21,9 @@
                     <div class="row">
                         <div class="col-sm-6 form-group">
                             <label>Full Name</label>
-                            <input type="text" class="form-control" placeholder="Full Name" name="name" value="{{ user.name }}">
+                            {{!-- <input type="text" class="form-control" placeholder="Full Name" name="name" value="{{ user.name }}"> --}}
+                            <input type="text" class="form-control" placeholder="Full Name" name="name" id="name" pattern="[A-Za-z' ]+" title="Only [a-zA-Z] allowed" minlength="2" maxlength="80" value="{{user.name}}">
+
                         </div>
                         <div class="col-sm-6 form-group">
                             <label>Gender</label>
@@ -50,17 +52,19 @@
                         </div>
                         <div class="col-sm-4 form-group">
                             <label>Location</label>
-                            <input type="text" class="form-control" placeholder="Location" name="location" value="{{ user.location }}">
+                            <input type="text" class="form-control" placeholder="Location" pattern="[A-Za-z' ]+" title="Use two or more [a-zA-Z]" name="location" value="{{ user.location }}">
                         </div>
                         <div class="col-sm-4 form-group">
                             <label>Occupation</label>
-                            <input type="text" class="form-control" placeholder="Occupation" name="occupation" value="{{ user.occupation }}">
+                            {{!-- <input type="text" class="form-control" placeholder="Occupation" name="occupation" value="{{ user.occupation }}"> --}}
+                            <input type="text" class="form-control" placeholder="Occupation" name="occupation" id="occupation" pattern="[a-zA-Z]+[' -,]{0,1}[a-zA-Z]+" minlength="2" maxlength="80" value="{{ user.occupation }}">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-6 form-group">
                             <label>Contact Information</label>
-                            <input type="text" class="form-control" placeholder="Contact Information" name="contactInformation" value="{{ user.contactInformation }}">
+                            {{!-- <input type="text" class="form-control" placeholder="Contact Information" name="contactInformation" value="{{ user.contactInformation }}"> --}}
+                            <input type="text" class="form-control" placeholder="Phone: 9999999999" name="contactInformation" id="contactInformation" pattern="[1-9]{3}[0-9]{3}[0-9]{4}" title="Only 10 digits allowed - 9999999999" minlength="10" maxlength="10" value="{{user.contactInformation}}">
                         </div>
                         <div class="col-sm-6 form-group">
                             <label for="locationpref">Location Preference</label>

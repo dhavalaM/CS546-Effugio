@@ -519,18 +519,18 @@ if(!imageFileName) {
     console.log("no file selected!!");
   }
 
-  if(xss(req.body.user_id), {
+  if(xss(req.body.user_id, {
     whiteList:          [],        // empty, means filter out all tags
     stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
     stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
                                    // to filter out its content
-  }){
-    user=await userData.getUserbyUserId(xss(req.body.user_id), {
+  })){
+    user=await userData.getUserbyUserId(xss(req.body.user_id, {
       whiteList:          [],        // empty, means filter out all tags
       stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
       stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
                                      // to filter out its content
-    });
+    }));
     if(user){
         console.log("Username "+user.name+" already exists");
         //let errorMessage="Username already exists";
