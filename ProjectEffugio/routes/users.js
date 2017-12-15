@@ -16,6 +16,7 @@ cloudinary.config({
   api_secret: 'YoIwSpXNsaiRXNNB1EDp_gGmhOs'
 });
 var setCookie = require('set-cookie-parser');
+var xss = require("xss");
 
 passport.use(new Strategy(
   async function(username, password, cb) {
@@ -92,10 +93,59 @@ router.get('/profile',
 //NM - added a post method for My Profile page to send user profile updates to the database
 router.post("/profile", multipartMiddleware,async (req, res) => {
     let updatedProfileData = req.body;
-  console.log("body: %j", req.body);
+    
+    updatedProfileData.location = xss(req.body.location, {
+      whiteList:          [],        // empty, means filter out all tags
+      stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+      stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                     // to filter out its content
+    });
+    updatedProfileData.occupation = xss(req.body.occupation, {
+      whiteList:          [],        
+      stripIgnoreTag:     true,      
+      stripIgnoreTagBody: ['script']
+    });
+    updatedProfileData.contact_info = xss(req.body.contact_info, {
+      whiteList:          [],        
+      stripIgnoreTag:     true,      
+      stripIgnoreTagBody: ['script']
+    });
+    updatedProfileData.email = xss(req.body.email, {
+      whiteList:          [],        
+      stripIgnoreTag:     true,      
+      stripIgnoreTagBody: ['script']
+    });
+    updatedProfileData.newPwd = xss(req.body.newPwd, {
+      whiteList:          [],        
+      stripIgnoreTag:     true,      
+      stripIgnoreTagBody: ['script']
+    });
+    updatedProfileData.newPwdConfirm = xss(req.body.newPwdConfirm, {
+      whiteList:          [],        
+      stripIgnoreTag:     true,      
+      stripIgnoreTagBody: ['script']
+    });
+
+  //console.log("body: %j", req.body);
+  console.log("Updated Profile Info: ");
+  console.log(updatedProfileData);
+
   let errors = [];
   let alllocationprefs = [];
   let budgetranges = [];
+
+  if(updatedProfileData.location.length===0){
+    let error_msg="Valid location not provided";
+    errors.push(error_msg);
+  }
+  if(updatedProfileData.occupation.length===0){
+    let error_msg="Valid occupation not provided";
+    errors.push(error_msg);
+  }
+  if(updatedProfileData.email.length===0){
+    let error_msg="Valid email not provided";
+    errors.push(error_msg);
+  }
 
   if ((updatedProfileData.newPwd) || (updatedProfileData.newPwdConfirm)){
     if (updatedProfileData.newPwd !== updatedProfileData.newPwdConfirm){
@@ -449,7 +499,12 @@ router.post('/register', multipartMiddleware, async function(req, res){
   
   //console.log("Filename :"+req.body.uploadPicture);
   var imageFile = req.files.uploadPicture.path;
-  var imageFileName = req.files.uploadPicture.name;
+  var imageFileName = xss(req.files.uploadPicture.name, {
+    whiteList:          [],        // empty, means filter out all tags
+    stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+    stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                   // to filter out its content
+  });
  
 if(!imageFileName) {
   let error_msg={"msg" :"Please select a profile picture for upload",
@@ -463,8 +518,19 @@ if(!imageFileName) {
     }
     console.log("no file selected!!");
   }
-  if(req.body.user_id){
-    user=await userData.getUserbyUserId(req.body.user_id);
+
+  if(xss(req.body.user_id), {
+    whiteList:          [],        // empty, means filter out all tags
+    stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+    stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                   // to filter out its content
+  }){
+    user=await userData.getUserbyUserId(xss(req.body.user_id), {
+      whiteList:          [],        // empty, means filter out all tags
+      stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+      stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                     // to filter out its content
+    });
     if(user){
         console.log("Username "+user.name+" already exists");
         //let errorMessage="Username already exists";
@@ -479,20 +545,193 @@ if(!imageFileName) {
         }
     }
 }
+
+const newUser = {
+  user_id: xss(req.body.user_id, {
+    whiteList:          [],        // empty, means filter out all tags
+    stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+    stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                   // to filter out its content
+  }),
+  hashedPassword: "",
+  password: xss(req.body.password, {
+    whiteList:          [],       
+    stripIgnoreTag:     true,      
+    stripIgnoreTagBody: ['script']
+  }),
+  name: xss(req.body.name, {
+    whiteList:          [],       
+    stripIgnoreTag:     true,      
+    stripIgnoreTagBody: ['script'] 
+  }),
+  dob: xss(req.body.dob, {
+    whiteList:          [],       
+    stripIgnoreTag:     true,      
+    stripIgnoreTagBody: ['script'] 
+  }),
+  gender: req.body.gender,
+  location: xss(req.body.location, {
+    whiteList:          [],       
+    stripIgnoreTag:     true,      
+    stripIgnoreTagBody: ['script'] 
+  }),
+  occupation: xss(req.body.occupation, {
+    whiteList:          [],       
+    stripIgnoreTag:     true,      
+    stripIgnoreTagBody: ['script']
+  }),
+  orientation: req.body.orientation,
+  contact_info: xss(req.body.contactInformation, {
+    whiteList:          [],        // empty, means filter out all tags
+    stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+    stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                   // to filter out its content
+  }),
+  email: xss(req.body.email, {
+    whiteList:          [],        // empty, means filter out all tags
+    stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+    stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                   // to filter out its content
+  }),
+};
+
+if(newUser.user_id.length===0){
+  let error_msg={"msg" :"Valid username not provided",
+  "param":"user_id" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.password.length===0){
+  let error_msg={"msg" :"Valid password not provided",
+  "param":"password" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.name.length===0){
+  let error_msg={"msg" :"Valid name not provided",
+  "param":"name" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.dob.length===0){
+  let error_msg={"msg" :"Valid date of birth not provided",
+  "param":"dob" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.location.length===0){
+  let error_msg={"msg" :"Valid location not provided",
+  "param":"location" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.occupation.length===0){
+  let error_msg={"msg" :"Valid occupation not provided",
+  "param":"occupation" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+if(newUser.email.length===0){
+  let error_msg={"msg" :"Valid email not provided",
+  "param":"email" };
+  if(!errors){
+    errors=[];
+    errors.push(error_msg);
+    //console.log(typeof(errors));
+  }else{
+    errors.push(error_msg);
+  }
+}
+
 	if(errors){
 
     var errors_user={
-      name:req.body.name ,
-      user_id:req.body.user_id,
-      password:req.body.password,
-      password2:req.body.password2,
-      dob:req.body.dob,
+      name:xss(req.body.name, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }) ,
+      user_id:xss(req.body.user_id, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      password:xss(req.body.password, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      password2:xss(req.body.password2, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      dob:xss(req.body.dob, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
       gender:req.body.gender,
-      location:req.body.location,
-      occupation:req.body.occupation,
+      location:xss(req.body.location, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      occupation:xss(req.body.occupation, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
       orientation:req.body.orientation,
-      contactInformation:req.body.contactInformation,
-      email:req.body.email ,
+      contactInformation:xss(req.body.contactInformation, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      email:xss(req.body.email, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }) ,
       budget:req.body.budgetPreference,
       locationpref:req.body.locationpref
     };
@@ -526,22 +765,63 @@ if(!imageFileName) {
         _location_pref.push(myloc);
       }
     }
+    /*
     const newUser = {
-      user_id: req.body.user_id,
+      user_id: xss(req.body.user_id, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
       hashedPassword: "",
-      password: req.body.password,
-      name: req.body.name,
-      dob: req.body.dob,
-      gender: req.body.gender,
-      location: req.body.location,
-      occupation: req.body.occupation,
-      orientation: req.body.orientation,
-      contact_info: req.body.contactInformation,
-      email: req.body.email,
-      budget: req.body.budgetPreference,
-      location_pref: _location_pref,
-      connections: conns
-    };
+      password: xss(req.body.password, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      name: xss(req.body.name, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      dob: xss(req.body.dob, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      gender: xss(req.body.gender),
+      location: xss(req.body.location, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      occupation: xss(req.body.occupation, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      orientation: xss(req.body.orientation),
+      contact_info: xss(req.body.contactInformation, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),
+      email: xss(req.body.email, {
+        whiteList:          [],        // empty, means filter out all tags
+        stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
+        stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
+                                       // to filter out its content
+      }),*/
+      newUser.budget = req.body.budgetPreference;
+      newUser.location_pref = _location_pref;
+      newUser.connections = conns;
+    //};
     addedUser=await userData.addUser(newUser,newUser.password);
     console.log("added new user");
     console.log(addedUser);
