@@ -517,6 +517,23 @@ if(!imageFileName) {
       errors.push(error_msg);
     }
     console.log("no file selected!!");
+  }else{
+
+   // let ext = (imageFileName.split("."))[1];
+    var ext = imageFileName.split(".").pop().toLowerCase();
+    if(ext != "png" && ext !="jpg" ){
+      let error_msg={"msg" :"Profile picture must be a .png or .jpg file",
+      "param":"uploadPictureext" };
+      if(!errors){
+        errors=[];
+        errors.push(error_msg);
+        //console.log(typeof(errors));
+      }else{
+        errors.push(error_msg);
+      }
+    }
+    console.log("ext is "+ext);
+
   }
 
   if(xss(req.body.user_id, {
