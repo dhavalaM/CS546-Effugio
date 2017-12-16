@@ -517,20 +517,37 @@ if(!imageFileName) {
       errors.push(error_msg);
     }
     console.log("no file selected!!");
+  }else{
+
+   // let ext = (imageFileName.split("."))[1];
+    var ext = imageFileName.split(".").pop().toLowerCase();
+    if(ext != "png" && ext !="jpg" ){
+      let error_msg={"msg" :"Profile picture must be a .png or .jpg file",
+      "param":"uploadPictureext" };
+      if(!errors){
+        errors=[];
+        errors.push(error_msg);
+        //console.log(typeof(errors));
+      }else{
+        errors.push(error_msg);
+      }
+    }
+    console.log("ext is "+ext);
+
   }
 
-  if(xss(req.body.user_id), {
+  if(xss(req.body.user_id, {
     whiteList:          [],        // empty, means filter out all tags
     stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
     stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
                                    // to filter out its content
-  }){
-    user=await userData.getUserbyUserId(xss(req.body.user_id), {
+  })){
+    user=await userData.getUserbyUserId(xss(req.body.user_id, {
       whiteList:          [],        // empty, means filter out all tags
       stripIgnoreTag:     true,      // filter out all HTML not in the whilelist
       stripIgnoreTagBody: ['script'] // the script tag is a special case, we need
                                      // to filter out its content
-    });
+    }));
     if(user){
         console.log("Username "+user.name+" already exists");
         //let errorMessage="Username already exists";
