@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<head>
+  <title>Effugio</title>
+</head>
 <div class="container">
     <h2 class="well">Register</h2>
     {{#if errors}} 
@@ -68,7 +72,7 @@
                         </div>
                         <div class="col-sm-6 form-group">
                             <label for="locationpref">Location Preference</label>
-                            <select multiple="true" class="form-control" id="locationpref" name="locationpref">
+                            <select multiple class="form-control" id="locationpref" name="locationpref">
                                 {{#multiselect user.locationpref}} {{#each locations}}
                                 <option value="{{this._id}}">{{this.name}}</option>
                                 {{/each}} {{/multiselect}}
