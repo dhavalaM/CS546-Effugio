@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<head>
+  <title>Effugio</title>
+</head>
 <div class="container">
 	<div class="row">
 		<div class="col-lg-12" id="profilearea">
@@ -7,7 +11,7 @@
 
                 </div>
                 <div class="avatar">
-                    <img src="http://res.cloudinary.com/effugio/image/upload/w_199,h_200,c_fill,r_20/{{ profilePicID}}.png" class="avatar img-circle" alt="avatar">
+                    <img src="http://res.cloudinary.com/effugio/image/upload/w_199,h_200,c_fill,r_20/{{profilePicID}}.png" class="avatar img-circle" alt="avatar">
                 </div>
                 <div class="info">
                     <div class="title">
@@ -16,16 +20,17 @@
                     <div class="desc" id="location">Lives in {{checkuser.location}}</div>
                     <div class="desc" id="Occupation">Occupation: {{checkuser.occupation}}</div>
                     <div class="desc" id="dob">{{{toage checkuser.dob }}} years</div>
-                    <div class="desc" id="budget range">Budget range: {{{getbudget checkuser.budget }}} $</div>
+                    <div class="desc" id="budgetrange">Budget range: {{{getbudget checkuser.budget }}} $</div>
                     {{#if conn.connected }}
                         <div class="desc" id="contactnum">Contact Information: {{checkuser.contact_info}}</div>
                         <div class="desc" id="emailaddr">Email: {{checkuser.email}}</div>
                     {{/if}}
-                    <ul  style="list-style: none" class="desc"> Travel Location Preferences:
-                            {{#each checkuser.location_pref}}
+                    <div class="desc" id="travellocprefs">Travel Location Preferences:</div>
+                    {{#each checkuser.location_pref}}
+                        <ul  style="list-style: none" class="desc"> 
                             <li>{{{ getlocation this}}}</li>
-                                {{/each}}
-                            </ul>
+                        </ul>
+                    {{/each}}
 
                             {{> connect_item }}
                     <!--Commenting <div class="desc" id="connectrequeststatus">

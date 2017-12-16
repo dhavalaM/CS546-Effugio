@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<head>
+  <title>Effugio</title>
+</head>
 <div class="container">
     <h2 class="well">My Profile</h2>
     {{#if hasErrors}}
@@ -30,10 +34,10 @@
                         <div class="col-sm-6 form-group">
                             <label for="gender">Gender</label>
                             <select class="form-control" name="gender" id="gender" disabled="disabled">
-                                {{#select user.gender}}
+                                {{#multiselect user.gender}}
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
-                                {{/select}}
+                                {{/multiselect}}
                             </select>
                         </div>
                           <input type="hidden" id="gender2" name="gender" value="{{user.gender}}">
@@ -41,11 +45,11 @@
                     <div class="form-group">
                         <label for="orientation">Orientation</label>
                         <select class="form-control" name="orientation" id="orientation" disabled="disabled">
-                            {{#select user.orientation}}
+                            {{#multiselect user.orientation}}
                             <option value="S">Straight</option>
                             <option value="G">Gay</option>
                             <option value="L">Lesbian</option>
-                            {{/select}}
+                            {{/multiselect}}
                         </select>
                     </div>
                     <input type="hidden" id="orientation2" name="orientation" value="{{user.orientation}}">
@@ -59,8 +63,7 @@
 
                         <div class="col-sm-4 form-group">
                             <label for="location">Location</label>
-                            <input type="text" class="form-control" placeholder="Location" name="location" value="{{ user.location }}">
-                        
+                            <input type="text" class="form-control" placeholder="Location" id="location" name="location" value="{{ user.location }}">
                         </div>
                         <div class="col-sm-4 form-group">
                             <label for="occupation">Occupation</label>
@@ -74,7 +77,7 @@
                         </div>
                         <div class="col-sm-6 form-group">
                             <label for="locationpref">Location Preferences</label>
-                            <select multiple class="form-control" id="locationpref" name="location_pref">
+                            <select multiple="true" class="form-control" id="locationpref" name="location_pref">
                                 {{#multiselect user.location_pref}} 
                                 {{#if locations.length}} 
                                     {{#each locations}}
